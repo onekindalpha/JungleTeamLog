@@ -30,16 +30,29 @@
 <hr>
 
 <h2>일일 스크럼</h2>
-<ul>
+
+<div id="scrum-input-area">
+  <input type="text" id="scrum-content-input" placeholder="오늘 할 일을 간단히">
+  <button id="scrum-register-btn">등록</button>
+</div>
+
+<ul id="scrum-list">
   {% for s in scrums %}
-    <li>
-      {{ s.log_date }} {{ member_names[s.user_id] }}: {{ s.content }}
-      {% if s.user_id == current_user_id %}
-        [수정] [삭제]
+    <li class="scrum-item" data-id="{{ s._id }}" data-user-id="{{ s.user_id }}">
+      <span class="scrum-date">{{ s.log_date }}</span>
+      <span class="scrum-name">{{ member_names[s.user_id] }}</span>
+      <span class="scrum-content">{{ s.content }}</span>
+      {% if s.user_id|string == current_user_id|string %}
+        <button class="scrum-edit-btn">수정</button>
+        <button class="scrum-delete-btn">삭제</button>
       {% endif %}
     </li>
   {% endfor %}
 </ul>
+
+<!-- JS에서 API 호출할 때 필요한 team_page_id, current_user_id를 화면에 숨겨서 전달 -->
+<input type="hidden" id="team-page-id" value="{{ page._id }}">
+<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
 
 <hr>
 
@@ -72,5 +85,8 @@
     </li>
   {% endfor %}
 </ul>
+{% endblock %}
 
+{% block scripts %}  
+  <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
 {% endblock %}

@@ -6,7 +6,7 @@ view_bp = Blueprint('team_view', __name__)
 
 @view_bp.route("/team/<team_page_id>")
 def team_page(team_page_id):
-    current_user_id = None
+    current_user_id = ObjectId('6a8d72d4cd0d6b3be61313b7')
 
     page = db.team_pages.find_one({"_id": ObjectId(team_page_id)}) 
     if not page:
@@ -18,7 +18,10 @@ def team_page(team_page_id):
     wil = list(db.wil.find({"team_page_id": ObjectId(team_page_id)}))
 
     member_names = {m["user_id"]: m["name"] for m in page["members"]}
+    print("member_names:", member_names)   # 여기 추가
 
+    for s in scrums:
+        print("scrum user_id:", s["user_id"], "→ str:", str(s["user_id"]))  # 이것도 추가
     return render_template("team_page.html",
         page=page,
         current_user_id=current_user_id,
