@@ -4,17 +4,25 @@ from flask import Flask
 from dotenv import load_dotenv
 from routes.team import team_blueprints
 
+from flask import Flask, redirect, url_for, render_template, request
+from dotenv import load_dotenv
+from routes.auth import auth_bp
+from routes.utils.jwt_utils import decode_token
+
+# app.py: 앱 생성 + .env 로드 + 각 담당자가 만든 blueprint들을 모아서 등록
+
+
 load_dotenv() # .env 파일 읽기
 
 app = Flask(__name__) # Flask 애플리케이션 객체를 하나 생성
 # __name__은 "지금 이 파일이 뭔지" 파이썬이 자동으로 넣어주는 값
 
+
 for bp in team_blueprints:
     app.register_blueprint(bp)
 
-@app.route("/") # 라우팅 등록 (테스트용 라우터임)
-def home():
-    return "Hello Jungle!"
+app.register_blueprint(auth_bp)
+
 
 # "이 파일을 직접 실행했을 때만" 아래 코드를 실행하라는 뜻
 if __name__ == "__main__":
