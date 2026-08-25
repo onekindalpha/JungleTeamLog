@@ -1,0 +1,21 @@
+# 가상환경 (uv가 만드는 venv)
+.venv/
+
+# 환경변수 (비밀 정보)
+.env
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
+
+# 에디터 설정
+.vscode/
+.idea/
+
+# OS 관련 파일
+.DS_Store
+Thumbs.db
+
+# Flask 관련
+instance/
+.flask_session/
