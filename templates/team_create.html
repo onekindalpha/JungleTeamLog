@@ -1,0 +1,60 @@
+<!-- 팀 생성 -->
+
+<!-- 홈에서 선택한 주차를 기준으로 팀을 생성하는 화면 -->
+
+<h1>팀 생성</h1>
+
+<!-- 팀 번호 선택 -->
+<section>
+
+    <h2>팀 번호</h2>
+
+    <select id="team-number">
+        <option value="1">1팀</option>
+        <option value="2">2팀</option>
+        <option value="3">3팀</option>
+        <option value="4">4팀</option>
+    </select>
+
+</section>
+
+<!-- 팀 이름 입력 -->
+<section>
+
+    <h2>팀 이름</h2>
+
+    <input id="team-name" placeholder="팀 이름">
+
+</section>
+
+<!-- 팀원 선택 -->
+<section>
+
+    <h2>팀원 선택</h2>
+
+    <button id="add-member-button">팀원 선택</button>
+
+    <div id="member-list">
+        <!-- JavaScript에서 선택 가능한 팀원 목록 표시 -->
+    </div>
+
+</section>
+
+<!-- 팀 생성하기 -->
+<section>
+
+    <h2>팀 생성하기</h2>
+
+    <button id="create-team-button">팀 생성하기</button>
+
+</section>
+
+<!-- 취소 -->
+<section>
+
+    <button id="cancel-button">취소</button>
+
+</section>
+
+<!-- 팀 생성 페이지 JavaScript -->
+<script src="{{ url_for('static', filename='js/team_create.js') }}"></script>
