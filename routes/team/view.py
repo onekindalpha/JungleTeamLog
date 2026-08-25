@@ -7,4 +7,5 @@ view_bp = Blueprint('team_view', __name__)
 
 @view_bp.route("/team/<team_page_id>")
 def team_page(team_page_id):
-    return render_template("team_page.html")
+    fake_data = [{"user": "이현지", "content": "테스트", "log_date": "8/25"}]
+    return render_template("team_page.html", datas = fake_data)
