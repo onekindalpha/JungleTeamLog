@@ -6,11 +6,26 @@ from config import db
 from test_auth import get_current_user_id
 from datetime import datetime, timezone
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, render_template
 from bson import ObjectId
 
 # Flask Blueprint
 create_bp = Blueprint("create", __name__)
+
+
+@create_bp.route("/team/new", methods=["GET"])
+def team_create_page():
+
+    week = request.args.get("week", type=int)
+
+    if week is None or not (1 <= week <= 23):
+        return "week 값이 올바르지 않습니다.", 400
+
+    return render_template(
+        "team_create.html",
+        week=week
+    )
+
 
 @create_bp.route("/api/team_pages", methods=["POST"])
 def create_team_page():

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
+
+<p>
+  팀원:
+  {% for member in page.members %}
+    {{ member.name }}{% if not loop.last %}, {% endif %}
+  {% endfor %}
+</p>
+
+<h2>이번 주 목표</h2>
+<ul>
+  {% for g in goals %}
+    <li>{{ g.competency }}</li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<h2>이번 주 커리큘럼 & 목표</h2>
+<p>커리큘럼: {{ page.curriculum }}</p>
+<ul>
+  {% for g in goals %}
+    <li>
+      [{{ g.competency }}] {{ g.goal_text }}
+      {% if g.achievement_rate is not none %}
+        - 달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
+      {% else %}
+        - 미체크
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<h2>일일 스크럼</h2>
+
+<div id="scrum-input-area">
+  <input type="text" id="scrum-content-input" placeholder="오늘 할 일을 간단히">
+  <button id="scrum-register-btn">등록</button>
+</div>
+
+<ul id="scrum-list">
+  {% for s in scrums %}
+    <li class="scrum-item" data-id="{{ s._id }}" data-user-id="{{ s.user_id }}">
+      <span class="scrum-date">{{ s.log_date }}</span>
+      <span class="scrum-name">{{ member_names[s.user_id] }}</span>
+      <span class="scrum-content">{{ s.content }}</span>
+      {% if s.user_id|string == current_user_id|string %}
+        <button class="scrum-edit-btn">수정</button>
+        <button class="scrum-delete-btn">삭제</button>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<!-- JS에서 API 호출할 때 필요한 team_page_id, current_user_id를 화면에 숨겨서 전달 -->
+<input type="hidden" id="team-page-id" value="{{ page._id }}">
+<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+
+<hr>
+
+<h2>코어타임 기록 (문제 → 해결)</h2>
+<ul>
+  {% for c in coretime %}
+    <li>
+      {{ c.log_date }} {{ member_names[c.user_id] }}<br>
+      ❓ {{ c.problem }}<br>
+      ✅ {{ c.solution }}
+      {% if c.user_id == current_user_id %}
+        [수정] [삭제]
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<h2>WIL 링크</h2>
+<ul>
+  {% for w in wil %}
+    <li>
+      {{ member_names[w.user_id] }} →
+      {% if w.url %}
+        <a href="{{ w.url }}">{{ w.url }}</a>
+      {% else %}
+        미등록
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+{% block scripts %}  
+  <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
+{% endblock %}
