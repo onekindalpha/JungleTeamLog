@@ -1,11 +1,16 @@
+# app.py: 앱 생성 + .env 로드 + 각 담당자가 만든 blueprint들을 모아서 등록
+
 from flask import Flask
 from dotenv import load_dotenv
-# app.py: 앱 생성 + .env 로드 + 각 담당자가 만든 blueprint들을 모아서 등록
+from routes.team import team_blueprints
 
 load_dotenv() # .env 파일 읽기
 
 app = Flask(__name__) # Flask 애플리케이션 객체를 하나 생성
 # __name__은 "지금 이 파일이 뭔지" 파이썬이 자동으로 넣어주는 값
+
+for bp in team_blueprints:
+    app.register_blueprint(bp)
 
 @app.route("/") # 라우팅 등록 (테스트용 라우터임)
 def home():
