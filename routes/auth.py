@@ -57,7 +57,7 @@ def api_login():
             "msg": "아이디 또는 비밀번호가 일치하지 않습니다."
         })
         
-    token = create_token(email)
+    token = create_token(user["_id"], email)
     return jsonify({"result": "success", "token": token})
 
 

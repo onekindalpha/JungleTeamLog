@@ -9,9 +9,10 @@ import jwt
 from config import SECRET_KEY
 
 
-def create_token(email):
+def create_token(user_id, email):
 
     payload = {
+        "user_id" : str(user_id),
         'email': email,
         'exp': datetime.datetime.now(datetime.timezone.utc)
         + datetime.timedelta(hours=1),
