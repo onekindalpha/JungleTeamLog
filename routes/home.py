@@ -1,10 +1,8 @@
 # 홈 화면 SSR
 from test_auth import get_current_user_id
-
 from flask import Blueprint, render_template
 from bson import ObjectId
 from config import db
-from test_auth import get_current_user_id
 
 home_bp = Blueprint("home", __name__)
 
