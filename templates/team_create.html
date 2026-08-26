@@ -1,52 +1,51 @@
 {% extends "base.html" %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_create.css') }}">
+{% endblock %}
+
 {% block content %}
+<div class="tc-container">
+    <div class="tc-card-wrapper">
 
-<!-- 팀 생성 -->
-<!-- 홈에서 선택한 주차를 기준으로 팀을 생성하는 화면 -->
+        <h1 class="tc-main-title">팀 생성</h1>
 
-<h1>팀 생성</h1>
+        <!-- 팀 번호 선택 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀 번호</label>
+            <div class="tc-select-wrapper">
+                <select id="team-number" class="tc-select">
+                    <option value="1">1팀</option>
+                    <option value="2">2팀</option>
+                    <option value="3">3팀</option>
+                    <option value="4">4팀</option>
+                </select>
+            </div>
+        </div>
 
-<!-- 팀 번호 선택 -->
-<section>
-    <h2>팀 번호</h2>
+        <!-- 팀 이름 입력 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀 이름</label>
+            <input id="team-name" class="tc-input" placeholder="팀 이름을 입력하세요">
+        </div>
 
-    <select id="team-number">
-        <option value="1">1팀</option>
-        <option value="2">2팀</option>
-        <option value="3">3팀</option>
-        <option value="4">4팀</option>
-    </select>
-</section>
+        <!-- 팀원 선택 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀원 선택</label>
+            <button id="add-member-button" type="button" class="tc-btn tc-btn-secondary">팀원 선택</button>
+            <div id="member-list" class="tc-member-list">
+                <!-- JavaScript에서 선택 가능한 팀원 목록 표시 -->
+            </div>
+        </div>
 
-<!-- 팀 이름 입력 -->
-<section>
-    <h2>팀 이름</h2>
-    <input id="team-name" placeholder="팀 이름">
-</section>
+        <!-- 버튼 영역 -->
+        <div class="tc-btn-group">
+            <button id="create-team-button" type="button" class="tc-btn tc-btn-primary">팀 생성하기</button>
+            <button id="cancel-button" type="button" class="tc-btn tc-btn-light">취소</button>
+        </div>
 
-<!-- 팀원 선택 -->
-<section>
-    <h2>팀원 선택</h2>
-
-    <button id="add-member-button">팀원 선택</button>
-
-    <div id="member-list">
-        <!-- JavaScript에서 선택 가능한 팀원 목록 표시 -->
     </div>
-</section>
-
-<!-- 팀 생성하기 -->
-<section>
-    <h2>팀 생성하기</h2>
-    <button id="create-team-button">팀 생성하기</button>
-</section>
-
-<!-- 취소 -->
-<section>
-    <button id="cancel-button">취소</button>
-</section>
-
+</div>
 {% endblock %}
 
 {% block scripts %}

@@ -1,99 +1,183 @@
 {% extends "base.html" %}
-{% block content %}
 
-<h1>{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
-
-<p>
-  팀원:
-  {% for member in page.members %}
-    {{ member.name }}{% if not loop.last %}, {% endif %}
-  {% endfor %}
-</p>
-
-<h2>이번 주 목표</h2>
-<ul>
-  {% for g in goals %}
-    <li>{{ g.competency }}</li>
-  {% endfor %}
-</ul>
-
-<hr>
-
-<h2>이번 주 커리큘럼 & 목표</h2>
-<p>커리큘럼: {{ page.curriculum }}</p>
-<ul>
-  {% for g in goals %}
-    <li>
-      [{{ g.competency }}] {{ g.goal_text }}
-      {% if g.achievement_rate is not none %}
-        - 달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
-      {% else %}
-        - 미체크
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-
-<hr>
-
-<h2>일일 스크럼</h2>
-
-<div id="scrum-input-area">
-  <input type="text" id="scrum-content-input" placeholder="오늘 할 일을 간단히">
-  <button id="scrum-register-btn">등록</button>
-</div>
-
-<ul id="scrum-list">
-  {% for s in scrums %}
-    <li class="scrum-item" data-id="{{ s._id }}" data-user-id="{{ s.user_id }}">
-      <span class="scrum-date">{{ s.log_date }}</span>
-      <span class="scrum-name">{{ member_names[s.user_id] }}</span>
-      <span class="scrum-content">{{ s.content }}</span>
-      {% if s.user_id|string == current_user_id|string %}
-        <button class="scrum-edit-btn">수정</button>
-        <button class="scrum-delete-btn">삭제</button>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-
-<!-- JS에서 API 호출할 때 필요한 team_page_id, current_user_id를 화면에 숨겨서 전달 -->
-<input type="hidden" id="team-page-id" value="{{ page._id }}">
-<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
-
-<hr>
-
-<h2>코어타임 기록 (문제 → 해결)</h2>
-<ul>
-  {% for c in coretime %}
-    <li>
-      {{ c.log_date }} {{ member_names[c.user_id] }}<br>
-      ❓ {{ c.problem }}<br>
-      ✅ {{ c.solution }}
-      {% if c.user_id == current_user_id %}
-        [수정] [삭제]
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-
-<hr>
-
-<h2>WIL 링크</h2>
-<ul>
-  {% for w in wil %}
-    <li>
-      {{ member_names[w.user_id] }} →
-      {% if w.url %}
-        <a href="{{ w.url }}">{{ w.url }}</a>
-      {% else %}
-        미등록
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_page.css') }}">
 {% endblock %}
 
-{% block scripts %}  
-  <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
+{% block content %}
+<div class="tp-container">
+
+    <div class="tp-dashboard-grid">
+
+        <!-- [좌측 사이드바] -->
+        <aside class="tp-sidebar">
+            <div class="tp-team-info">
+                <h1 class="tp-sidebar-title">{{ page.week }}주차 {{ page.team_number }}팀</h1>
+                <p class="tp-sidebar-team-name">{{ page.team_name }}</p>
+
+                <div class="tp-members-box">
+                    <span class="tp-member-label">팀원</span>
+                    <p class="tp-member-names">
+                        {% for member in page.members %}
+                            {{ member.name }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+
+            <nav class="tp-sidebar-nav">
+                <a href="#curriculum-section" class="tp-nav-item active">구현 & 커리큘럼</a>
+                <a href="#scrum-section" class="tp-nav-item">일일 스크럼</a>
+                <a href="#coretime-section" class="tp-nav-item">코어타임 기록</a>
+                <a href="#wil-section" class="tp-nav-item">WIL 링크</a>
+            </nav>
+        </aside>
+
+        <!-- [우측 메인 영역] -->
+        <main class="tp-main-content">
+
+            <!-- 1. 커리큘럼 & 목표 -->
+            <section id="curriculum-section" class="tp-card">
+                <h2 class="tp-card-title">이번 주 커리큘럼 & 목표</h2>
+                <div class="tp-curriculum-badge">커리큘럼: {{ page.curriculum }}</div>
+
+                <ul class="tp-goal-list">
+                    {% for g in goals %}
+                    <li class="tp-goal-item">
+                        <div class="tp-goal-header">
+                            <span class="tp-competency-tag">[{{ g.competency }}]</span>
+                            <span class="tp-goal-text">{{ g.goal_text }}</span>
+                        </div>
+                        <div class="tp-goal-status">
+                            {% if g.achievement_rate is not none %}
+                                <span class="tp-rate-badge">달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}</span>
+                            {% else %}
+                                <span class="tp-rate-badge uncheck">미체크</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- 2. 일일 스크럼 -->
+            <section id="scrum-section" class="tp-card">
+                <h2 class="tp-card-title">일일 스크럼</h2>
+
+                <div id="scrum-input-area" class="tp-scrum-input-group">
+                    <input type="text" id="scrum-content-input" class="tp-custom-input" placeholder="오늘 할 일을 간단히 입력하세요">
+                    <button id="scrum-register-btn" class="tp-custom-btn tp-primary-btn">등록</button>
+                </div>
+
+                <ul id="scrum-list" class="tp-scrum-list">
+                    {% for s in scrums %}
+                    {% set s_uid = s.user_id|string if s.user_id else '' %}
+                    {% set my_uid = current_user_id|string %}
+                    <li class="tp-scrum-card" data-id="{{ s._id }}" data-user-id="{{ s_uid }}">
+                        <div class="tp-scrum-header">
+                            <span class="tp-scrum-author">✍️ {{ s.author_name or member_names.get(s_uid) or '작성자' }}</span>
+                            <span class="tp-scrum-date">📅 {{ s.log_date if s.log_date else '2026-08-26' }}</span>
+                        </div>
+                        <p class="tp-scrum-body">{{ s.content }}</p>
+
+                        {% if s.is_author or (s_uid == my_uid and my_uid != '') or s_uid == '' %}
+                        <div class="tp-scrum-actions">
+                            <button class="scrum-edit-btn tp-action-btn edit">수정</button>
+                            <button class="scrum-delete-btn tp-action-btn delete">삭제</button>
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- 3. 코어타임 기록 -->
+            <section id="coretime-section" class="tp-card">
+                <h2 class="tp-card-title">코어타임 기록 (문제 → 해결)</h2>
+
+                <ul class="tp-coretime-list">
+                    {% for c in coretime %}
+                    <li class="tp-coretime-item">
+                        <div class="tp-coretime-meta">
+                            <span class="tp-coretime-date">📅 {{ c.log_date }}</span>
+                            <span class="tp-coretime-author">✍️ {{ c.author_name }}</span>
+                        </div>
+                        <div class="tp-problem-box">❓ {{ c.problem }}</div>
+                        <div class="tp-solution-box">✅ {{ c.solution }}</div>
+
+                        {% if c.is_author %}
+                        <div class="tp-action-links">
+                            <button class="tp-link-btn">수정</button>
+                            <button class="tp-link-btn delete">삭제</button>
+                        </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- 4. WIL 링크 -->
+            <section id="wil-section" class="tp-card">
+                <h2 class="tp-card-title">WIL 링크</h2>
+
+                <ul class="tp-wil-list">
+                    {% for w in wil %}
+                    {% set w_user_id = w.user_id|string if w.user_id else '' %}
+                    <li class="tp-wil-item">
+                        <span class="tp-wil-author">{{ member_names.get(w_user_id, '팀원') }} →</span>
+                        {% if w.url %}
+                            <a href="{{ w.url }}" target="_blank" class="tp-wil-link">{{ w.url }}</a>
+                        {% else %}
+                            <span class="tp-wil-empty">미등록</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- JS 전달용 데이터 -->
+            <input type="hidden" id="team-page-id" value="{{ page._id }}">
+            <input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+
+        </main>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const navItems = document.querySelectorAll('.tp-nav-item');
+    const sections = document.querySelectorAll('.tp-card');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            navItems.forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    window.addEventListener('scroll', () => {
+        let currentSectionId = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
+                currentSectionId = section.getAttribute('id');
+            }
+        });
+
+        if (currentSectionId) {
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href') === `#${currentSectionId}`) {
+                    item.classList.add('active');
+                }
+            });
+        }
+    });
+});
+</script>
 {% endblock %}
