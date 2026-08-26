@@ -1,0 +1,31 @@
+<<<<<<< Updated upstream
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name ="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href="../static/css/login.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+</head>
+    <body>
+        <div class="login-wrapper">
+            
+            <form onsubmit="login(); return false;" id="login-form">
+                <input type="text" id="user-email" name="userName" placeholder="Email" required><br>
+                <input type="password" id="user-password" name="userPassword" placeholder="Password" required>
+                <input type="submit" id="login-sub" value="로그인">
+
+                <div class="signup-link">
+                    <a href="/signup" class="signup-link">회원가입</a>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
+>>>>>>> Stashed changes
