@@ -13,19 +13,52 @@
 <hr>
 
 <h2>이번 주 커리큘럼 & 목표</h2>
-<p>커리큘럼: {{ page.curriculum }}</p>
-<ul>
+
+<!-- 커리큘럼 -->
+<p>이번 주 커리큘럼</p>
+{% if page.curriculum %}
+  <span id="curriculum-text">{{ page.curriculum }}</span>
+  <button id="curriculum-edit-btn">수정</button>
+{% else %}
+  <input type="text" id="curriculum-input" placeholder="이번 주 학습 주제를 간단히 적어보세요">
+  <button id="curriculum-save-btn">등록</button>
+{% endif %}
+
+<!-- 목표 추가 폼 -->
+<p>핵심역량 목표</p>
+<div id="goal-add-form">
+  <select id="competency-select">
+    <option value="">핵심역량 선택</option>
+    <option value="문제해결">문제해결</option>
+    <option value="설계">설계</option>
+    <option value="구현">구현</option>
+    <option value="품질">품질</option>
+    <option value="유지보수">유지보수</option>
+    <option value="협업">협업</option>
+    <option value="태도">태도</option>
+    <option value="비즈니스 이해">비즈니스 이해</option>
+    <option value="AI 활용">AI 활용</option>
+    <option value="학습 민첩성">학습 민첩성</option>
+  </select>
+  <input type="text" id="goal-text-input" placeholder="목표를 적어보세요">
+  <button id="goal-add-btn">+ 추가</button>
+</div>
+
+<!-- 목표 목록 -->
+<ul id="goal-list">
   {% for g in goals %}
-    <li>
+    <li class="goal-item" data-id="{{ g._id }}">
       [{{ g.competency }}] {{ g.goal_text }}
       {% if g.achievement_rate is not none %}
         - 달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
-      {% else %}
-        - 미체크
       {% endif %}
     </li>
   {% endfor %}
 </ul>
+
+{% if goals|length > 0 %}
+  <button id="achievement-check-btn">달성률 체크</button>
+{% endif %}
 
 <hr>
 
@@ -109,4 +142,5 @@
   <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
   <script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
   <script src="{{ url_for('static', filename='js/wil.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/curriculum.js') }}"></script>
 {% endblock %}

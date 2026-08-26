@@ -48,8 +48,8 @@ $(function () {
   // 수정 버튼 → 인라인 입력창 전환
   $('#coretime-list').on('click', '.coretime-edit-btn', function () {
     const $li = $(this).closest('.coretime-item');
-    const currentProblem = $li.find('.coretime-problem').text().replace('❓ ', '');
-    const currentSolution = $li.find('.coretime-solution').text().replace('✅ ', '');
+    const currentProblem = $li.find('.coretime-problem').text();
+    const currentSolution = $li.find('.coretime-solution').text();
 
     $li.find('.coretime-problem').replaceWith(
       `<input type="text" class="coretime-edit-problem" value="${currentProblem}">`
