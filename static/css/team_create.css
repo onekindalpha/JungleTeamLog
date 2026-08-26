@@ -1,0 +1,120 @@
+/* 기본 배경 및 초기화 */
+body, html {
+    background-color: #f4f6f8 !important;
+    margin: 0;
+    padding: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
+}
+
+.tc-container {
+    max-width: 520px !important;
+    margin: 3rem auto !important;
+    padding: 0 1rem !important;
+    box-sizing: border-box !important;
+}
+
+.tc-card-wrapper {
+    background-color: #ffffff !important;
+    border-radius: 14px !important;
+    padding: 2.25rem 2rem !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.tc-main-title {
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #2b2b2b !important;
+    text-align: center !important;
+    margin: 0 0 1.75rem 0 !important;
+}
+
+.tc-form-group {
+    margin-bottom: 1.25rem !important;
+}
+
+.tc-label {
+    display: block !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    color: #334155 !important;
+    margin-bottom: 0.5rem !important;
+}
+
+.tc-input, .tc-select {
+    width: 100% !important;
+    height: 46px !important;
+    padding: 0 14px !important;
+    border: 1.5px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    background-color: #ffffff !important;
+    transition: border-color 0.2s !important;
+}
+
+.tc-input:focus, .tc-select:focus {
+    border-color: #00c73c !important;
+}
+
+.tc-select-wrapper {
+    position: relative !important;
+}
+
+.tc-member-list {
+    margin-top: 0.75rem !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+.tc-btn-group {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-top: 2rem !important;
+}
+
+.tc-btn {
+    width: 100% !important;
+    height: 48px !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+}
+
+.tc-btn-primary {
+    background-color: #00c73c !important;
+    color: #ffffff !important;
+}
+
+.tc-btn-primary:hover {
+    background-color: #00b135 !important;
+}
+
+.tc-btn-secondary {
+    background-color: #edf2f7 !important;
+    color: #4a5568 !important;
+    height: 40px !important;
+}
+
+.tc-btn-secondary:hover {
+    background-color: #e2e8f0 !important;
+}
+
+.tc-btn-light {
+    background-color: transparent !important;
+    color: #718096 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.tc-btn-light:hover {
+    background-color: #f8fafc !important;
+}
