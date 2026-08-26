@@ -57,18 +57,30 @@
 <hr>
 
 <h2>코어타임 기록 (문제 → 해결)</h2>
-<ul>
+<p style="font-size:12px; color:gray;">안 풀렸어도 괜찮아요, "아직 해결 못함"도 훌륭한 기록입니다</p>
+
+<input type="text" id="coretime-problem-input" placeholder="오늘 있었던 문제 (예: 재귀 부분에서 계속 막힘)">
+<input type="text" id="coretime-solution-input" placeholder="어떻게 해결했나요? (진행중이면 그대로 적어도 돼요)">
+<button id="coretime-register-btn">+ 등록</button>
+
+<ul id="coretime-list">
   {% for c in coretime %}
-    <li>
-      {{ c.log_date }} {{ member_names[c.user_id] }}<br>
-      ❓ {{ c.problem }}<br>
-      ✅ {{ c.solution }}
-      {% if c.user_id == current_user_id %}
-        [수정] [삭제]
-      {% endif %}
+    <li class="coretime-item {% if loop.index > 4 %}coretime-hidden{% endif %}"
+        data-id="{{ c._id }}">
+      <span class="coretime-date">{{ c.log_date }}</span>
+      <span class="coretime-name">{{ member_names[c.user_id] }}</span>
+      <button class="coretime-edit-btn">수정</button>
+      <button class="coretime-delete-btn">삭제</button>
+      <br>
+      <span class="coretime-problem">❓ {{ c.problem }}</span><br>
+      <span class="coretime-solution">✅ {{ c.solution }}</span>
     </li>
   {% endfor %}
 </ul>
+
+{% if coretime|length > 4 %}
+  <button id="coretime-more-btn">더보기 ({{ coretime|length - 4 }}개)</button>
+{% endif %}
 
 <hr>
 
@@ -89,4 +101,5 @@
 
 {% block scripts %}  
   <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
 {% endblock %}
