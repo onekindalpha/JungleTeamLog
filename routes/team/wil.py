@@ -6,7 +6,6 @@ from datetime import datetime
 wil_bf = Blueprint('wil', __name__)
 
 # 등록
-# 등록 
 @wil_bf.route("/api/team_pages/<team_page_id>/wil", methods=["POST"])
 def add_wil(team_page_id):
     data = request.json
