@@ -72,8 +72,8 @@
       <button class="coretime-edit-btn">수정</button>
       <button class="coretime-delete-btn">삭제</button>
       <br>
-      <span class="coretime-problem">❓ {{ c.problem }}</span><br>
-      <span class="coretime-solution">✅ {{ c.solution }}</span>
+      <span class="coretime-problem">문제: {{ c.problem }}</span><br>
+      <span class="coretime-solution">해결: {{ c.solution }}</span>
     </li>
   {% endfor %}
 </ul>
@@ -85,21 +85,28 @@
 <hr>
 
 <h2>WIL 링크</h2>
-<ul>
-  {% for w in wil %}
-    <li>
-      {{ member_names[w.user_id] }} →
-      {% if w.url %}
-        <a href="{{ w.url }}">{{ w.url }}</a>
-      {% else %}
-        미등록
+<ul id="wil-list">
+  {% for m in page.members %}
+    <li class="wil-item" data-user-id="{{ m.user_id }}">
+      {{ m.name }} -> 
+      <span class="wil-url">
+        {% if wil_map.get(m.user_id) %}
+           <a href="{{ wil_map[m.user_id] }}" target="_blank">{{ wil_map[m.user_id] }}</a>
+        {% else %}
+          미등록
+        {% endif %}
+      </span>
+      {% if m.user_id == current_user_id %}
+        <button class="wil-edit-btn">{{ '수정' if wil_map.get(m.user_id) else '등록' }}</button>
       {% endif %}
     </li>
   {% endfor %}
 </ul>
+
 {% endblock %}
 
 {% block scripts %}  
   <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
   <script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/wil.js') }}"></script>
 {% endblock %}

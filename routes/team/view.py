@@ -16,12 +16,9 @@ def team_page(team_page_id):
     scrums = list(db.scrums.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) #최신순 정렬 
     coretime = list(db.coretime.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) 
     wil = list(db.wil.find({"team_page_id": ObjectId(team_page_id)}))
-
+    wil_map = {w["user_id"] : w["url"] for w in wil}
     member_names = {m["user_id"]: m["name"] for m in page["members"]}
-    print("member_names:", member_names)   # 여기 추가
 
-    for s in scrums:
-        print("scrum user_id:", s["user_id"], "→ str:", str(s["user_id"]))  # 이것도 추가
     return render_template("team_page.html",
         page=page,
         current_user_id=current_user_id,
@@ -29,5 +26,5 @@ def team_page(team_page_id):
         goals=goals,
         scrums=scrums,
         coretime=coretime,
-        wil=wil,
+        wil_map=wil_map,
     )

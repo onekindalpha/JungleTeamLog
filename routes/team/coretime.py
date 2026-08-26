@@ -33,7 +33,7 @@ def add_coretime(team_page_id):
         "problem": problem,
         "solution": solution,
         "log_date": today,
-        "created_date": datetime.now(),
+        "created_at": datetime.now(),
     })
 
     # http response 만들어 보내기 

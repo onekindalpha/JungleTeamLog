@@ -25,8 +25,8 @@ $(function () {
             <button class="coretime-edit-btn">수정</button>
             <button class="coretime-delete-btn">삭제</button>
             <br>
-            <span class="coretime-problem">❓ ${c.problem}</span><br>
-            <span class="coretime-solution">✅ ${c.solution}</span>
+            <span class="coretime-problem">문제: ${c.problem}</span><br>
+            <span class="coretime-solution">해결: ${c.solution}</span>
           </li>
         `;
         $('#coretime-list').prepend(html);
