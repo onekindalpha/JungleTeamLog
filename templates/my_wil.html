@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="my-wil">
+    <h1>My WIL</h1>
+
+    {% if wil_list %}
+        {% for wil in wil_list %}
+            <div class="wil-item">
+                <span>{{ wil.week }}주차</span>
+                <a href="{{ wil.url }}" target="_blank">WIL 보기</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>등록된 WIL이 없습니다.</p>
+    {% endif %}
+</section>
+
+{% endblock %}
