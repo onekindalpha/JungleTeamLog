@@ -3,6 +3,13 @@
 
 <h1>{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
 
+<p>
+  팀원:
+  {% for member in page.members %}
+    {{ member.name }}{% if not loop.last %}, {% endif %}
+  {% endfor %}
+</p>
+
 <h2>이번 주 목표</h2>
 <ul>
   {% for g in goals %}

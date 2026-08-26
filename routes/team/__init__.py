@@ -1,7 +1,14 @@
 from .view import view_bp
 from .scrums import scrums_bp
-# view.py, goals.py 등: 각자 독립적인 라우트를 담고 있음 (합쳐지지 않음)
-# __init__.py: 그 파일들을 한군데 모아서 리스트로 정리만 함 (일종의 "목차" 역할)
-# app.py: 그 리스트를 가져와서 for문으로 각각 따로 등록 (__init__.py가 없다면 app.py는 지저분해짐)
+from .create import create_bp
+from .users import users_bp
 
-team_blueprints = [view_bp, scrums_bp]
+# view.py, scrums.py, create.py, users.py의 Blueprint를 한곳에서 관리
+# app.py에서는 team_blueprints를 가져와 일괄 등록
+
+team_blueprints = [
+    view_bp,
+    scrums_bp,
+    create_bp,
+    users_bp
+]
