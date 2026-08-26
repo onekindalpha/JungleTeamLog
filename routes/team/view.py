@@ -1,80 +1,30 @@
-from flask import Blueprint, render_template, request
-from routes.utils.jwt_utils import decode_token, jwt_required
+from flask import Blueprint, render_template, request, jsonify, g
 from bson import ObjectId
 from config import db
+from ..utils.jwt_utils import jwt_required
 
 view_bp = Blueprint('team_view', __name__)
 
 @view_bp.route("/team/<team_page_id>")
 @jwt_required
 def team_page(team_page_id):
-    token = request.cookies.get("mytoken")
-    payload = decode_token(token)
-
-    if payload is None:
-        return "인증이 필요합니다.", 401
-
-    current_user = db.users.find_one({"email": payload["email"]})
-    if current_user is None:
-        return "사용자를 찾을 수 없습니다.", 404
-
-    # 현재 로그인 유저 정보 추출
-    current_user_id = str(current_user["_id"])
-    current_user_name = current_user.get("name") or current_user.get("username") or "팀원"
-    
-    # 팀 페이지 조회
+    # 있는 페이지인지 확인 
     page = db.team_pages.find_one({"_id": ObjectId(team_page_id)}) 
     if not page:
         return "팀페이지를 찾을 수 없습니다", 404
-        
-    # 팀원 권한 검사
-    is_member = any(
-        str(member.get("user_id")) == current_user_id
-        for member in page.get("members", [])
-        if member.get("user_id")
-    )
 
-    if not is_member:
-        return "해당 팀의 팀원이 아닙니다.", 403
+    # 해당 페이지의 멤버인지 확인 
+    current_user_id = ObjectId(g.user["user_id"])
+    member_ids = [m["user_id"] for m in page["members"]]
+    if current_user_id not in member_ids:
+        return "접근 권한이 없습니다", 403
 
-    # DB 데이터 조회
     goals = list(db.goals.find({"team_page_id": ObjectId(team_page_id)}))
-    scrums_raw = list(db.scrums.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1))
-    coretime_raw = list(db.coretime.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) 
+    scrums = list(db.scrums.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) #최신순 정렬 
+    coretime = list(db.coretime.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) 
     wil = list(db.wil.find({"team_page_id": ObjectId(team_page_id)}))
-
-    # 유저 이름 맵 생성
-    member_names = {
-        str(m.get("user_id")): m.get("name") 
-        for m in page.get("members", []) 
-        if m.get("user_id")
-    }
-
-    # 스크럼 데이터 가공 (작성자 이름 및 권한 부여)
-    scrums = []
-    for s in scrums_raw:
-        s_user_id = str(s.get("user_id", "")) if s.get("user_id") else ""
-        
-        author_name = member_names.get(s_user_id) or s.get("user_name")
-        if not author_name and s_user_id and ObjectId.is_valid(s_user_id):
-            u = db.users.find_one({"_id": ObjectId(s_user_id)})
-            if u:
-                author_name = u.get("name") or u.get("username")
-        
-        author_name = author_name or current_user_name
-        is_author = (s_user_id == current_user_id) or (s_user_id == "")
-
-        s["author_name"] = author_name
-        s["is_author"] = is_author
-        scrums.append(s)
-
-    # 코어타임 데이터 가공
-    coretime = []
-    for c in coretime_raw:
-        c_user_id = str(c.get("user_id", "")) if c.get("user_id") else ""
-        c["author_name"] = member_names.get(c_user_id) or c.get("user_name") or current_user_name
-        c["is_author"] = (c_user_id == current_user_id) or (c_user_id == "")
-        coretime.append(c)
+    wil_map = {w["user_id"] : w["url"] for w in wil}
+    member_names = {m["user_id"]: m["name"] for m in page["members"]}
 
     return render_template("team_page.html",
         page=page,
@@ -83,5 +33,20 @@ def team_page(team_page_id):
         goals=goals,
         scrums=scrums,
         coretime=coretime,
-        wil=wil,
+        wil_map=wil_map,
     )
+
+@view_bp.route("/api/team_pages/<team_page_id>/curriculum", methods=["PATCH"])
+def update_curriculum(team_page_id):
+    data = request.json
+    curriculum = data.get("curriculum", "").strip()
+
+    if not curriculum:
+        return jsonify({"error": "커리큘럼을 입력해주세요"}), 400
+
+    db.team_pages.update_one(
+        {"_id": ObjectId(team_page_id)},
+        {"$set": {"curriculum": curriculum}}
+    )
+
+    return jsonify({"success": True, "curriculum": curriculum})

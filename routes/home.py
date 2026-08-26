@@ -94,7 +94,7 @@ def logout():
     
     return response
 
-@home_bp.route("/my/wil")
+@home_bp.route('/my/wil')
 @jwt_required
 def my_wil():
     return render_template("my_wil.html")
