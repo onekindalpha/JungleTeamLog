@@ -47,18 +47,31 @@
 <!-- 목표 목록 -->
 <ul id="goal-list">
   {% for g in goals %}
-    <li class="goal-item" data-id="{{ g._id }}">
-      [{{ g.competency }}] {{ g.goal_text }}
-      {% if g.achievement_rate is not none %}
-        - 달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
-      {% endif %}
+    <li class="goal-item" 
+        data-id="{{ g._id }}"
+        data-rate="{{ g.achievement_rate if g.achievement_rate is not none else '' }}"
+        data-note="{{ g.achievement_note or '' }}">
+      <span class="goal-competency">[{{ g.competency }}]</span>
+      <span class="goal-text">{{ g.goal_text }}</span>
+      <span class="achievement-display">
+        {% if g.achievement_rate is not none %}
+          달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
+        {% endif %}
+      </span>
+      <button class="goal-edit-btn">수정</button>
+      <button class="goal-delete-btn">삭제</button>
     </li>
   {% endfor %}
 </ul>
 
+<!-- 달성률 체크 -->
 {% if goals|length > 0 %}
   <button id="achievement-check-btn">달성률 체크</button>
 {% endif %}
+
+<div id="achievement-form-area" style="display:none;"></div>
+
+</div>
 
 <hr>
 
@@ -143,4 +156,5 @@
   <script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
   <script src="{{ url_for('static', filename='js/wil.js') }}"></script>
   <script src="{{ url_for('static', filename='js/curriculum.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/goals.js') }}"></script>
 {% endblock %}
