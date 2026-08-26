@@ -68,6 +68,7 @@ def update_scrums(scrum_id):
 
 
 @scrums_bp.route("/api/scrums/<scrum_id>", methods=["DELETE"])
+@jwt_required
 def delete_scrums(scrum_id):
     # 존재하는지 확인  
     scrum = db.scrums.find_one({"_id": ObjectId(scrum_id)})
