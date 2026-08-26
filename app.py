@@ -24,7 +24,7 @@ app.register_blueprint(auth_bp)
 
 # "이 파일을 직접 실행했을 때만" 아래 코드를 실행하라는 뜻
 if __name__ == "__main__":
-    app.run(debug=True)  # 실제로 서버를 켜서 요청을 기다리기 시작 (http://127.0.0.1:5000)
+    app.run(host="0.0.0.0", port=5001, debug=True)
 
     # debug=True : 개발 중에 편하라고 켜두는 옵션
 
