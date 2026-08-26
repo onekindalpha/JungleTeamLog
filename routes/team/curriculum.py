@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from bson import ObjectId
 from config import db
+from ..utils.jwt_utils import jwt_required
 
 curriculum_bp = Blueprint('curriculum', __name__)
 
 @curriculum_bp.route("/api/team_pages/<team_page_id>/curriculum", methods=["PATCH"])
+@jwt_required
 def update_curriculum(team_page_id):
     data = request.json
     curriculum = data.get("curriculum", "").strip()

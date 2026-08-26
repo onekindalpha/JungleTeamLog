@@ -1,17 +1,19 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 from bson import ObjectId
 from config import db 
 from datetime import datetime
+from ..utils.jwt_utils import jwt_required
 
 wil_bf = Blueprint('wil', __name__)
 
 # 등록
 @wil_bf.route("/api/team_pages/<team_page_id>/wil", methods=["POST"])
+@jwt_required
 def add_wil(team_page_id):
     data = request.json
     url = data.get("url", "").strip()
 
-    current_user_id = ObjectId('6a8d72d4cd0d6b3be61313b7') #임시로 하드코딩, 추후 나중에 JWT에서 꺼내올 부분
+    current_user_id = ObjectId(g.user["user_id"])
 
     # 본인이 쓴 wil이 존재하는지 확인
     existing = db.wil.find_one({

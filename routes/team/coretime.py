@@ -1,12 +1,14 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, g
 from bson import ObjectId
 from config import db 
 from datetime import date, datetime
+from ..utils.jwt_utils import jwt_required
 
 coretime_bf = Blueprint('coretime', __name__)
 
 # 등록 
 @coretime_bf.route("/api/team_pages/<team_page_id>/coretime", methods=["POST"])
+@jwt_required
 def add_coretime(team_page_id):
     # http request에서 json data 가져오기 
     # request.json
@@ -19,7 +21,7 @@ def add_coretime(team_page_id):
         return jsonify({"error": "문제와 해결 방법을 모두 입력해주세요."}), 400
 
     # 현재 유저 정보 가져오기 
-    current_user_id = ObjectId('6a8d72d4cd0d6b3be61313b7') #임시로 하드코딩, 추후 나중에 JWT에서 꺼내올 부분
+    current_user_id = ObjectId(g.user["user_id"])
     user = db.users.find_one({"_id": current_user_id})
     user_name = user["name"] if user else "알수없음"
     print(user_name)

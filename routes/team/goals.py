@@ -2,10 +2,12 @@ from flask import Blueprint, request, jsonify
 from bson import ObjectId
 from datetime import datetime
 from config import db
+from ..utils.jwt_utils import jwt_required
 
 goals_bp = Blueprint('goals', __name__)
 
 @goals_bp.route("/api/team_pages/<team_page_id>/goals", methods=["POST"])
+@jwt_required
 def add_goal(team_page_id):
     data = request.json
     competency = data.get("competency", "").strip()
@@ -31,7 +33,6 @@ def add_goal(team_page_id):
             "goal_text": goal_text,
         }
     })
-
 
 @goals_bp.route("/api/goals/<goal_id>", methods=["PATCH"])
 def update_goal(goal_id):

@@ -1,16 +1,23 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, g
 from bson import ObjectId
 from config import db
+from ..utils.jwt_utils import jwt_required
 
 view_bp = Blueprint('team_view', __name__)
 
 @view_bp.route("/team/<team_page_id>")
+@jwt_required
 def team_page(team_page_id):
-    current_user_id = ObjectId('6a8d72d4cd0d6b3be61313b7')
-
+    # 있는 페이지인지 확인 
     page = db.team_pages.find_one({"_id": ObjectId(team_page_id)}) 
     if not page:
         return "팀페이지를 찾을 수 없습니다", 404
+
+    # 해당 페이지의 멤버인지 확인 
+    current_user_id = ObjectId(g.user["user_id"])
+    member_ids = [m["user_id"] for m in page["members"]]
+    if current_user_id not in member_ids:
+        return "접근 권한이 없습니다", 403
 
     goals = list(db.goals.find({"team_page_id": ObjectId(team_page_id)}))
     scrums = list(db.scrums.find({"team_page_id": ObjectId(team_page_id)}).sort("created_at", -1)) #최신순 정렬 

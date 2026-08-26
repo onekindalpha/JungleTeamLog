@@ -25,8 +25,8 @@ $(function () {
             <button class="coretime-edit-btn">수정</button>
             <button class="coretime-delete-btn">삭제</button>
             <br>
-            <span class="coretime-problem">문제: ${c.problem}</span><br>
-            <span class="coretime-solution">해결: ${c.solution}</span>
+            <span>문제:</span> <span class="coretime-problem">${c.problem}</span><br>
+            <span>해결:</span> <span class="coretime-solution">${c.solution}</span>ddd
           </li>
         `;
         $('#coretime-list').prepend(html);
@@ -78,8 +78,8 @@ $(function () {
       contentType: 'application/json',
       data: JSON.stringify({ problem: newProblem, solution: newSolution }),
       success: function (res) {
-        $li.find('.coretime-edit-problem').replaceWith(`<span class="coretime-problem">❓ ${res.problem}</span>`);
-        $li.find('.coretime-edit-solution').replaceWith(`<span class="coretime-solution">✅ ${res.solution}</span>`);
+        $li.find('.coretime-edit-problem').replaceWith(`<span class="coretime-problem">${res.problem}</span>`);
+        $li.find('.coretime-edit-solution').replaceWith(`<span class="coretime-solution">${res.solution}</span>`);
         $li.find('.coretime-save-btn').text('수정').removeClass('coretime-save-btn').addClass('coretime-edit-btn');
       },
       error: function (xhr) {

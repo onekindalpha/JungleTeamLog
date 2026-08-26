@@ -2,16 +2,17 @@ import datetime
 
 from functools import wraps
 
-from flask import redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for, g
 
 import jwt
 
 from config import SECRET_KEY
 
 
-def create_token(email):
+def create_token(user_id, email):
 
     payload = {
+        'user_id': str(user_id),
         'email': email,
         'exp': datetime.datetime.now(datetime.timezone.utc)
         + datetime.timedelta(hours=1),
@@ -64,6 +65,8 @@ def jwt_required(f):
         # 추가: 만료되었거나 잘못된 토큰이면 로그인 페이지 이동
         if payload is None:
             return redirect("/login")
+
+        g.user = payload
 
         return f(*args, **kwargs)
 
