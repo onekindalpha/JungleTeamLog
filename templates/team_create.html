@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_create.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="tc-container">
+    <div class="tc-card-wrapper">
+
+        <h1 class="tc-main-title">팀 생성</h1>
+
+        <!-- 팀 번호 선택 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀 번호</label>
+            <div class="tc-select-wrapper">
+                <select id="team-number" class="tc-select">
+                    <option value="1">1팀</option>
+                    <option value="2">2팀</option>
+                    <option value="3">3팀</option>
+                    <option value="4">4팀</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- 팀 이름 입력 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀 이름</label>
+            <input id="team-name" class="tc-input" placeholder="팀 이름을 입력하세요">
+        </div>
+
+        <!-- 팀원 선택 -->
+        <div class="tc-form-group">
+            <label class="tc-label">팀원 선택</label>
+            <button id="add-member-button" type="button" class="tc-btn tc-btn-secondary">팀원 선택</button>
+            <div id="member-list" class="tc-member-list">
+                <!-- JavaScript에서 선택 가능한 팀원 목록 표시 -->
+            </div>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div class="tc-btn-group">
+            <button id="create-team-button" type="button" class="tc-btn tc-btn-primary">팀 생성하기</button>
+            <button id="cancel-button" type="button" class="tc-btn tc-btn-light">취소</button>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/team_create.js') }}"></script>
+{% endblock %}
