@@ -1,161 +1,283 @@
 {% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_page.css') }}">
+{% endblock %}
+
 {% block content %}
-
-<a href="/"><h1>HOME</h1></a>
-<h1>{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
-
-<h2>이번 주 목표</h2>
-<ul>
-  {% for g in goals %}
-    <li>{{ g.competency }}</li>
-  {% endfor %}
-</ul>
-
-<hr>
-
-<h2>이번 주 커리큘럼 & 목표</h2>
-
-<!-- 커리큘럼 -->
-<p>이번 주 커리큘럼</p>
-{% if page.curriculum %}
-  <span id="curriculum-text">{{ page.curriculum }}</span>
-  <button id="curriculum-edit-btn">수정</button>
-{% else %}
-  <input type="text" id="curriculum-input" placeholder="이번 주 학습 주제를 간단히 적어보세요">
-  <button id="curriculum-save-btn">등록</button>
-{% endif %}
-
-<!-- 목표 추가 폼 -->
-<p>핵심역량 목표</p>
-<div id="goal-add-form">
-  <select id="competency-select">
-    <option value="">핵심역량 선택</option>
-    <option value="문제해결">문제해결</option>
-    <option value="설계">설계</option>
-    <option value="구현">구현</option>
-    <option value="품질">품질</option>
-    <option value="유지보수">유지보수</option>
-    <option value="협업">협업</option>
-    <option value="태도">태도</option>
-    <option value="비즈니스 이해">비즈니스 이해</option>
-    <option value="AI 활용">AI 활용</option>
-    <option value="학습 민첩성">학습 민첩성</option>
-  </select>
-  <input type="text" id="goal-text-input" placeholder="목표를 적어보세요">
-  <button id="goal-add-btn">+ 추가</button>
-</div>
-
-<!-- 목표 목록 -->
-<ul id="goal-list">
-  {% for g in goals %}
-    <li class="goal-item" 
-        data-id="{{ g._id }}"
-        data-rate="{{ g.achievement_rate if g.achievement_rate is not none else '' }}"
-        data-note="{{ g.achievement_note or '' }}">
-      <span class="goal-competency">[{{ g.competency }}]</span>
-      <span class="goal-text">{{ g.goal_text }}</span>
-      <span class="achievement-display">
-        {% if g.achievement_rate is not none %}
-          달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
-        {% endif %}
+<nav class="navbar" role="navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <span class="button is-light is-small">
+        <span class="icon">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+        <span>홈으로 돌아가기</span>
       </span>
-      <button class="goal-edit-btn">수정</button>
-      <button class="goal-delete-btn">삭제</button>
-    </li>
-  {% endfor %}
-</ul>
+    </a>
+  </div>
+</nav>
 
-<!-- 달성률 체크 -->
-{% if goals|length > 0 %}
-  <button id="achievement-check-btn">달성률 체크</button>
-{% endif %}
+<section class="section">
+  <div class="container">
 
-<div id="achievement-form-area" style="display:none;"></div>
+    <h1 class="title">{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
 
-</div>
+    <div class="columns">
 
-<hr>
+      <!-- ================= 왼쪽 사이드바 ================= -->
+      <div class="column is-3">
+        <div class="sidebar-sticky">
 
-<h2>일일 스크럼</h2>
+          <div class="box">
+            <p class="menu-label">이번 주 목표</p>
+            <ul id="team-goal-list" class="menu-list">
+              {% for g in goals %}
+                <li data-id="{{ g._id }}">
+                  <a href="#goals-section">
+                    <span class="icon has-text-success"><i class="fas fa-check"></i></span>
+                    {{ g.competency }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
 
-<div id="scrum-input-area">
-  <input type="text" id="scrum-content-input" placeholder="오늘 할 일을 간단히">
-  <button id="scrum-register-btn">등록</button>
-</div>
+          <div class="box">
+            <p class="menu-label">바로가기</p>
+            <ul class="menu-list">
+              <li><a href="#goals-section">이번 주 커리큘럼 & 목표</a></li>
+              <li><a href="#scrum-section">일일 스크럼</a></li>
+              <li><a href="#coretime-section">코어타임</a></li>
+              <li><a href="#wil-section">WIL</a></li>
+            </ul>
+          </div>
 
-<ul id="scrum-list">
-  {% for s in scrums %}
-    <li class="scrum-item" data-id="{{ s._id }}" data-user-id="{{ s.user_id }}">
-      <span class="scrum-date">{{ s.log_date }}</span>
-      <span class="scrum-name">{{ member_names[s.user_id] }}</span>
-      <span class="scrum-content">{{ s.content }}</span>
-      {% if s.user_id|string == current_user_id|string %}
-        <button class="scrum-edit-btn">수정</button>
-        <button class="scrum-delete-btn">삭제</button>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
+        </div>
+      </div>
 
-<!-- JS에서 API 호출할 때 필요한 team_page_id, current_user_id를 화면에 숨겨서 전달 -->
-<input type="hidden" id="team-page-id" value="{{ page._id }}">
-<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+      <!-- ================= 오른쪽 메인 콘텐츠 ================= -->
+      <div class="column is-9">
 
-<hr>
+        <!-- 목표 섹션 -->
+        <div id="goals-section" class="section-anchor">
 
-<h2>코어타임 기록 (문제 → 해결)</h2>
-<p style="font-size:12px; color:gray;">안 풀렸어도 괜찮아요, "아직 해결 못함"도 훌륭한 기록입니다</p>
+          <h2 class="title is-4">이번 주 커리큘럼</h2>
 
-<input type="text" id="coretime-problem-input" placeholder="오늘 있었던 문제 (예: 재귀 부분에서 계속 막힘)">
-<input type="text" id="coretime-solution-input" placeholder="어떻게 해결했나요? (진행중이면 그대로 적어도 돼요)">
-<button id="coretime-register-btn">+ 등록</button>
+          <!-- 커리큘럼 -->
+          <div class="box">
+            {% if page.curriculum %}
+              <span id="curriculum-text">{{ page.curriculum }}</span>
+              <button id="curriculum-edit-btn" class="button is-small is-link is-light ml-2">수정</button>
+            {% else %}
+              <div class="field has-addons">
+                <div class="control is-expanded">
+                  <input type="text" id="curriculum-input" class="input" placeholder="이번 주 학습 주제를 간단히 적어보세요">
+                </div>
+                <div class="control">
+                  <button id="curriculum-save-btn" class="button is-primary">등록</button>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          <hr>
 
-<ul id="coretime-list">
-  {% for c in coretime %}
-    <li class="coretime-item {% if loop.index > 4 %}coretime-hidden{% endif %}"
-        data-id="{{ c._id }}">
-      <span class="coretime-date">{{ c.log_date }}</span>
-      <span class="coretime-name">{{ member_names[c.user_id] }}</span>
-      <button class="coretime-edit-btn">수정</button>
-      <button class="coretime-delete-btn">삭제</button>
-      <br>
-      <span>문제:</span> <span class="coretime-problem">{{ c.problem }}</span><br>
-      <span>해결:</span> <span class="coretime-solution">{{ c.solution }}</span>
-    </li>
-  {% endfor %}
-</ul>
+          <!-- 목표 추가 폼 -->
+          <h2 class="title is-4">핵심역량 목표</h2>
 
-{% if coretime|length > 4 %}
-  <button id="coretime-more-btn">더보기 ({{ coretime|length - 4 }}개)</button>
-{% endif %}
+          <div class="box">
+            <p class="mb-2">핵심역량 목표</p>
+            <div id="goal-add-form" class="field has-addons">
+              <div class="control">
+                <div class="select">
+                  <select id="competency-select">
+                    <option value="">핵심역량 선택</option>
+                    <option value="문제해결">문제해결</option>
+                    <option value="설계">설계</option>
+                    <option value="구현">구현</option>
+                    <option value="품질">품질</option>
+                    <option value="유지보수">유지보수</option>
+                    <option value="협업">협업</option>
+                    <option value="태도">태도</option>
+                    <option value="비즈니스 이해">비즈니스 이해</option>
+                    <option value="AI 활용">AI 활용</option>
+                    <option value="학습 민첩성">학습 민첩성</option>
+                  </select>
+                </div>
+              </div>
+              <div class="control is-expanded">
+                <input type="text" id="goal-text-input" class="input" placeholder="목표를 적어보세요">
+              </div>
+              <div class="control">
+                <button id="goal-add-btn" class="button is-primary">+ 추가</button>
+              </div>
+            </div>
 
-<hr>
+            <!-- 목표 목록 -->
+            <div class="content">
+              <ul id="goal-list" style="list-style:none; padding-left:0;">
+                {% for g in goals %}
+                  <li class="goal-item box py-3 px-4 mb-2"
+                      data-id="{{ g._id }}"
+                      data-rate="{{ g.achievement_rate if g.achievement_rate is not none else '' }}"
+                      data-note="{{ g.achievement_note or '' }}">
+                    <span class="goal-competency tag is-info is-light">{{ g.competency }}</span>
+                    <span class="goal-text ml-2">{{ g.goal_text }}</span>
+                    <span class="achievement-display has-text-grey ml-2">
+                      {% if g.achievement_rate is not none %}
+                        달성률 {{ g.achievement_rate }}% / {{ g.achievement_note }}
+                      {% endif %}
+                    </span>
+                    <div class="buttons is-pulled-right">
+                      <button class="goal-edit-btn button is-small is-link is-light">수정</button>
+                      <button class="goal-delete-btn button is-small is-danger is-light">삭제</button>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
 
-<h2>WIL 링크</h2>
-<ul id="wil-list">
-  {% for m in page.members %}
-    <li class="wil-item" data-user-id="{{ m.user_id }}">
-      {{ m.name }} -> 
-      <span class="wil-url">
-        {% if wil_map.get(m.user_id) %}
-           <a href="{{ wil_map[m.user_id] }}" target="_blank">{{ wil_map[m.user_id] }}</a>
-        {% else %}
-          미등록
-        {% endif %}
-      </span>
-      {% if m.user_id == current_user_id %}
-        <button class="wil-edit-btn">{{ '수정' if wil_map.get(m.user_id) else '등록' }}</button>
-      {% endif %}
-    </li>
-  {% endfor %}
-</ul>
+            <!-- 달성률 체크 -->
+            {% if goals|length > 0 %}
+              <button id="achievement-check-btn" class="button is-warning is-light">달성률 체크</button>
+            {% endif %}
 
+            <div id="achievement-form-area" style="display:none;"></div>
+          </div>
+
+        </div>
+        <!-- /목표 섹션 -->
+
+        <hr>
+
+        <!-- 스크럼 섹션 -->
+        <div id="scrum-section" class="section-anchor">
+
+          <h2 class="title is-4">일일 스크럼</h2>
+
+          <div class="box">
+            <div id="scrum-input-area" class="field has-addons">
+              <div class="control is-expanded">
+                <input type="text" id="scrum-content-input" class="input" placeholder="오늘 할 일을 간단히">
+              </div>
+              <div class="control">
+                <button id="scrum-register-btn" class="button is-primary">등록</button>
+              </div>
+            </div>
+            <ul id="scrum-list" style="list-style:none; padding-left:0;">
+              {% for s in scrums %}
+                <li class="scrum-item box py-3 px-4 mb-2 {% if loop.index > 4 %}scrum-hidden{% endif %}" data-id="{{ s._id }}" data-user-id="{{ s.user_id }}">
+                  <span class="scrum-date tag is-light">{{ s.log_date }}</span>
+                  <span class="scrum-name has-text-weight-semibold ml-2">{{ member_names[s.user_id] }}</span>
+                  <span class="scrum-content ml-2">{{ s.content }}</span>
+                  {% if s.user_id|string == current_user_id|string %}
+                    <div class="buttons is-pulled-right">
+                      <button class="scrum-edit-btn button is-small is-link is-light">수정</button>
+                      <button class="scrum-delete-btn button is-small is-danger is-light">삭제</button>
+                    </div>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+
+            {% if scrums|length > 4 %}
+              <button id="scrum-more-btn" class="button is-light is-fullwidth">더보기 ({{ scrums|length - 4 }}개)</button>
+            {% endif %}
+          </div>
+
+        </div>
+        <!-- /스크럼 섹션 -->
+
+        <!-- JS에서 API 호출할 때 필요한 team_page_id, current_user_id를 화면에 숨겨서 전달 -->
+        <input type="hidden" id="team-page-id" value="{{ page._id }}">
+        <input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+
+        <hr>
+
+        <!-- 코어타임 섹션 -->
+        <div id="coretime-section" class="section-anchor">
+
+          <h2 class="title is-4">코어타임 기록 (문제 → 해결)</h2>
+
+          <div class="box">
+            <div class="field">
+              <div class="control">
+                <input type="text" id="coretime-problem-input" class="input mb-2" placeholder="오늘 있었던 문제 (예: 재귀 부분에서 계속 막힘)">
+              </div>
+              <div class="control">
+                <input type="text" id="coretime-solution-input" class="input mb-2" placeholder="어떻게 해결했나요? (진행중이면 그대로 적어도 돼요)">
+              </div>
+            </div>
+            <button id="coretime-register-btn" class="button is-primary">+ 등록</button>
+
+            <ul id="coretime-list" style="list-style:none; padding-left:0;" class="mt-4">
+              {% for c in coretime %}
+                <li class="coretime-item box py-3 px-4 mb-2 {% if loop.index > 4 %}coretime-hidden{% endif %}"
+                    data-id="{{ c._id }}">
+                  <span class="coretime-date tag is-light">{{ c.log_date }}</span>
+                  <span class="coretime-name has-text-weight-semibold ml-2">{{ member_names[c.user_id] }}</span>
+                  <div class="buttons is-pulled-right">
+                    <button class="coretime-edit-btn button is-small is-link is-light">수정</button>
+                    <button class="coretime-delete-btn button is-small is-danger is-light">삭제</button>
+                  </div>
+                  <br>
+                  <p class="mt-2"><strong>문제:</strong> <span class="coretime-problem">{{ c.problem }}</span></p>
+                  <p><strong>해결:</strong> <span class="coretime-solution">{{ c.solution }}</span></p>
+                </li>
+              {% endfor %}
+            </ul>
+
+            {% if coretime|length > 4 %}
+              <button id="coretime-more-btn" class="button is-light is-fullwidth">더보기 ({{ coretime|length - 4 }}개)</button>
+            {% endif %}
+          </div>
+
+        </div>
+        <!-- /코어타임 섹션 -->
+
+        <hr>
+
+        <!-- WIL 섹션 -->
+        <div id="wil-section" class="section-anchor">
+
+          <h2 class="title is-4">WIL 링크</h2>
+          <div class="box">
+            <ul id="wil-list" style="list-style:none; padding-left:0;">
+              {% for m in page.members %}
+                <li class="wil-item mb-2" data-user-id="{{ m.user_id }}">
+                  <span class="has-text-weight-semibold">{{ m.name }}</span> ->
+                  <span class="wil-url">
+                    {% if wil_map.get(m.user_id) %}
+                      <a href="{{ wil_map[m.user_id] }}" target="_blank">{{ wil_map[m.user_id] }}</a>
+                    {% else %}
+                      <span class="has-text-grey">미등록</span>
+                    {% endif %}
+                  </span>
+                  {% if m.user_id == current_user_id %}
+                    <button class="wil-edit-btn button is-small is-link is-light ml-2">{{ '수정' if wil_map.get(m.user_id) else '등록' }}</button>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        </div>
+        <!-- /WIL 섹션 -->
+
+      </div>
+      <!-- /오른쪽 메인 콘텐츠 -->
+
+    </div>
+    <!-- /columns -->
+
+  </div>
+</section>
 {% endblock %}
 
 {% block scripts %}  
-  <script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/wil.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/curriculum.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/goals.js') }}"></script>
+<script src="{{ url_for('static', filename='js/scrums.js') }}"></script>
+<script src="{{ url_for('static', filename='js/coretime.js') }}"></script>
+<script src="{{ url_for('static', filename='js/wil.js') }}"></script>
+<script src="{{ url_for('static', filename='js/curriculum.js') }}"></script>
+<script src="{{ url_for('static', filename='js/goals.js') }}"></script>
 {% endblock %}

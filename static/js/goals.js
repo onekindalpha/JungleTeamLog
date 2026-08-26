@@ -1,48 +1,66 @@
 $(function () {
-  const teamPageId = $('#team-page-id').val();
+    const teamPageId = $('#team-page-id').val();
 
-  // "목표 추가" → POST로 새 목표 등록
-  $('#goal-add-btn').on('click', function () {
-    const competency = $('#competency-select').val();
-    const goalText = $('#goal-text-input').val().trim();
+    // "목표 추가" → POST로 새 목표 등록
+    $('#goal-add-btn').on('click', function () {
+        const competency = $('#competency-select').val();
+        const goalText = $('#goal-text-input').val().trim();
 
-    if (!competency || !goalText) {
-      alert('핵심역량과 목표 내용을 모두 입력해주세요');
-      return;
-    }
+        if (!competency || !goalText) {
+        alert('핵심역량과 목표 내용을 모두 입력해주세요');
+        return;
+        }
 
-    $.ajax({
-      url: `/api/team_pages/${teamPageId}/goals`,
-      method: 'POST',
-      contentType: 'application/json',
-      data: JSON.stringify({ competency: competency, goal_text: goalText }),
-      success: function (res) {
-        const g = res.goal;
-        const html = `
-          <li class="goal-item" data-id="${g._id}">
-            <span class="goal-competency">[${g.competency}]</span>
-            <span class="goal-text">${g.goal_text}</span>
-            <button class="goal-edit-btn">수정</button>
-            <button class="goal-delete-btn">삭제</button>
-          </li>
-        `;
-        $('#goal-list').append(html);
-        $('#goal-text-input').val('');
-        $('#competency-select').val('');
-      },
-      error: function (xhr) {
-        alert(xhr.responseJSON.error);
-      }
+        $.ajax({
+        url: `/api/team_pages/${teamPageId}/goals`,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ competency: competency, goal_text: goalText }),
+        success: function (res) {
+            const g = res.goal;
+            // 목표 추가 
+            const html = `
+            <li class="goal-item box py-3 px-4 mb-2" 
+                    data-id="${g._id}"
+                    data-rate=""
+                    data-note="">
+                <span class="goal-competency tag is-info is-light">${g.competency}</span>
+                <span class="goal-text ml-2">${g.goal_text}</span>
+                <span class="achievement-display has-text-grey ml-2"></span>
+                <div class="buttons is-pulled-right">
+                    <button class="goal-edit-btn button is-small is-link is-light">수정</button>
+                    <button class="goal-delete-btn button is-small is-danger is-light">삭제</button>
+                </div>
+            </li>
+            `;
+            $('#goal-list').append(html);
+            $('#goal-text-input').val('');
+            $('#competency-select').val('');
+
+            // 2) 사이드바 "이번 주 목표" 목록에도 추가
+            const sidebarHtml = `
+                <li data-id="${g._id}">
+                    <a href="#goals-section">
+                    <span class="icon has-text-success"><i class="fas fa-check"></i></span>
+                    ${g.competency}
+                    </a>
+                </li>
+            `;
+            $('#team-goal-list').append(sidebarHtml);
+        },
+        error: function (xhr) {
+            alert(xhr.responseJSON.error);
+        }
+        });
     });
-  });
 
     // "수정" 클릭 → 입력창으로 전환
     $('#goal-list').on('click', '.goal-edit-btn', function () {
         const $li = $(this).closest('.goal-item');
         const currentText = $li.find('.goal-text').text().trim();
 
-        $li.find('.goal-text').replaceWith(`<input type="text" class="goal-edit-input" value="${currentText}">`);
-        $(this).text('저장').removeClass('goal-edit-btn').addClass('goal-save-btn');
+        $li.find('.goal-text').replaceWith(`<input type="text" class="goal-edit-input input is-small" value="${currentText}">`);
+        $(this).text('저장').removeClass('goal-edit-btn is-link is-light').addClass('goal-save-btn button is-primary');
     });
 
     // "저장" 클릭 → PATCH로 수정 반영 
@@ -62,8 +80,8 @@ $(function () {
         contentType: 'application/json',
         data: JSON.stringify({ goal_text: newGoalText }),
         success: function (res) {
-            $li.find('.goal-edit-input').replaceWith(`<span class="goal-text">${res.goal_text}</span>`);
-            $li.find('.goal-save-btn').text('수정').removeClass('goal-save-btn').addClass('goal-edit-btn');
+            $li.find('.goal-edit-input').replaceWith(`<span class="goal-text ml-2">${res.goal_text}</span>`);
+            $li.find('.goal-save-btn').text('수정').removeClass('goal-save-btn button is-primary').addClass('goal-edit-btn button is-light');
         },
         error: function (xhr) {
             alert(xhr.responseJSON.error);
@@ -83,6 +101,7 @@ $(function () {
         method: 'DELETE',
         success: function () {
             $li.remove();
+            $(`#team-goal-list li[data-id="${goalId}"]`).remove();
         },
         error: function (xhr) {
             alert(xhr.responseJSON.error);
@@ -111,7 +130,7 @@ $(function () {
 
             // 각 버튼마다 "이 버튼이 현재 선택된 값과 같은지" 확인해서 클래스 결정
             const rates = [0, 25, 50, 75, 100];
-            let buttonsHtml = '';  
+            let buttonsHtml = '';
 
             for (let i = 0; i < rates.length; i++) {
                 const r = rates[i];  // 0, 25, 50, 75, 100을 순서대로 하나씩
@@ -123,17 +142,23 @@ $(function () {
                 }
 
                 // 버튼 하나의 HTML을 만들어서, 기존 문자열 뒤에 이어붙임
-                buttonsHtml = buttonsHtml + `<button class="rate-btn ${isSelected}" data-rate="${r}">${r}%</button>`;
+                buttonsHtml = buttonsHtml + `<button class="rate-btn button is-small ${isSelected}" data-rate="${r}">${r}%</button>`;
             }
-            
+
             const html = `
-            <div class="achievement-item" data-id="${goalId}">
-                <p>${competency} ${goalText}</p>
-                <div class="rate-buttons">
+            <div class="achievement-item box mb-3" data-id="${goalId}">
+                <p class="mb-2"><span class="tag is-info is-light">${competency}</span> <span class="ml-1">${goalText}</span></p>
+                <div class="rate-buttons buttons has-addons mb-2">
                     ${buttonsHtml}
                 </div>
-                <input type="text" class="achievement-note-input" placeholder="메모" value="${currentNote}">
-                <button class="achievement-save-btn">저장</button>
+                <div class="field has-addons">
+                    <div class="control is-expanded">
+                        <input type="text" class="achievement-note-input input is-small" placeholder="메모" value="${currentNote}">
+                    </div>
+                    <div class="control">
+                        <button class="achievement-save-btn button is-small is-primary">저장</button>
+                    </div>
+                </div>
             </div>
             `;
             $formArea.append(html);
@@ -171,12 +196,16 @@ $(function () {
             success: function (res) {
                 // 목표 목록 쪽의 해당 항목에도 달성률 반영
                 const $goalLi = $(`.goal-item[data-id="${goalId}"]`);
+
+                // data-rate, data-note도 최신 값으로 갱신 (안 해두면 폼 다시 열 때 예전 값 기준으로 그려짐)
+                $goalLi.attr('data-rate', res.achievement_rate);
+                $goalLi.attr('data-note', res.achievement_note);
+
                 $goalLi.find('.achievement-display').remove();
-                $goalLi.append(`<span class="achievement-display"> - 달성률 ${res.achievement_rate}% / ${res.achievement_note}</span>`);
-                alert('저장되었습니다');
+                $goalLi.append(`<span class="achievement-display has-text-grey ml-2">달성률 ${res.achievement_rate}% / ${res.achievement_note}</span>`);
             },
             error: function (xhr) {
-            alert(xhr.responseJSON.error);
+                alert(xhr.responseJSON.error);
             }
         });
     });

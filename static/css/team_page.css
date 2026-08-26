@@ -1,0 +1,25 @@
+
+.coretime-hidden, .scrum-hidden { display: none; }
+.rate-btn.selected { background: #4c8dff; color: white; }
+
+html {
+    scroll-behavior: smooth; /* 앵커 클릭 시 부드럽게 스크롤 */
+}
+
+/* 사이드바가 스크롤해도 화면에 고정되도록 */
+.sidebar-sticky {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+}
+
+/* 스크롤해서 섹션 상단에 딱 붙었을 때 네비바 등에 가려지지 않도록 여유 공간 */
+.section-anchor {
+    scroll-margin-top: 1rem;
+}
+
+.goal-edit-input, .scrum-edit-input, .coretime-edit-problem, .coretime-edit-solution, .wil-url-input, #curriculum-input {
+  width: auto;
+  min-width: 300px;
+  display: inline-block;
+}
