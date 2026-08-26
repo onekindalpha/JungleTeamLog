@@ -1,6 +1,7 @@
 from config import db
-from flask import Blueprint, request, render_template, redirect
+from flask import Blueprint, request, render_template, redirect, g
 from routes.utils.jwt_utils import decode_token, jwt_required
+from bson import ObjectId
 
 home_bp = Blueprint("home", __name__)
 
@@ -94,7 +95,51 @@ def logout():
     
     return response
 
-@home_bp.route('/my/wil')
+@home_bp.route("/my/wil")
 @jwt_required
 def my_wil():
-    return render_template("my_wil.html")
+    # JWT 가져오기
+    token = request.cookies.get("mytoken")
+
+    # JWT 해석
+    payload = decode_token(token)
+
+    if payload is None:
+        return redirect("/login")
+
+    # JWT에서 현재 로그인 사용자 ID 가져오기
+    user_id = payload["user_id"]
+
+    # MongoDB에 user_id가 ObjectId로 저장되어 있다면 변환 필요
+    
+    user_id = ObjectId(user_id)
+
+    # 현재 사용자가 등록한 WIL 조회
+    wil_docs = list(
+        db.wil.find({
+            "user_id": user_id
+        })
+    )
+
+    wil_list = []
+
+    for wil in wil_docs:
+        team_page = db.team_pages.find_one({
+            "_id": wil["team_page_id"]
+        })
+
+        if team_page is None:
+            continue
+
+        wil_list.append({
+            "week": team_page["week"],
+            "url": wil["url"]
+        })
+
+    # 주차 순으로 정렬
+    wil_list.sort(key=lambda x: x["week"])
+
+    return render_template(
+        "my_wil.html",
+        wil_list=wil_list
+    )
