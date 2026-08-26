@@ -93,3 +93,8 @@ def logout():
     response.delete_cookie("mytoken", path="/")
     
     return response
+
+@home_bp.route('/my/wil')
+@jwt_required
+def my_wil():
+    return render_template("my_wil.html")
