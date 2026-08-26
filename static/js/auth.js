@@ -1,15 +1,3 @@
-function logout() {
-    $.ajax({
-        type: "POST",
-        url: "/api/auth/logout",
-        success: function (response) {
-            if (response.result === "success") {
-                alert(response.msg);
-                window.location.href = "/login";
-            }
-        }
-    });
-}
 function login() {
     let email = $('#user-email').val();
     let password = $('#user-password').val();
@@ -56,6 +44,24 @@ function register() {
             } else {
                 alert(response['msg'])
             }
+        }
+    })
+}
+
+function logout() {
+    $.ajax({
+        type: "POST",
+        url: "/api/auth/logout",
+
+        success: function (response) {
+            if (response.result === "success") {
+                alert(response.msg);
+                window.location.href = "/login";
+            }
+        },
+
+        error: function () {
+            alert("로그아웃 중 오류가 발생했습니다.");
         }
     });
 }

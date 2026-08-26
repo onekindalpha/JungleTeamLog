@@ -11,13 +11,9 @@
         </p>
 
         {% if wil_list %}
-
             <div class="box">
-
                 {% for wil in wil_list %}
-
                     <div class="level">
-
                         <div class="level-left">
                             <div class="level-item">
                                 <strong>{{ wil.week }}주차</strong>
@@ -26,32 +22,24 @@
 
                         <div class="level-right">
                             <div class="level-item">
-                                <a
-                                    href="{{ wil.url }}"
-                                    target="_blank"
-                                    class="button is-success is-light"
-                                >
+                                <a href="{{ wil.url }}"
+                                   target="_blank"
+                                   class="button is-success is-light">
                                     WIL 보기
                                 </a>
                             </div>
                         </div>
-
                     </div>
 
                     {% if not loop.last %}
                         <hr>
                     {% endif %}
-
                 {% endfor %}
-
             </div>
-
         {% else %}
-
             <div class="notification is-light">
                 등록된 WIL이 없습니다.
             </div>
-
         {% endif %}
 
         <a href="/" class="button is-light">

@@ -7,6 +7,8 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
 <div class="home-container">
 
     <!-- 1. 상단 네비게이션 -->
@@ -22,10 +24,10 @@
         </div>
 
         <div class="top-buttons">
-            <button id="my-wil-button" class="button is-success is-outlined" >
+            <button id="my-wil-button" class="button is-success is-outlined" onclick="location.href='/my/wil'">
                 My WIL
             </button>
-            <button id="logout-button" class="button is-light">
+            <button id="logout-button" class="button is-light" onclick="logout()">
                 로그아웃
             </button>
         </div>
