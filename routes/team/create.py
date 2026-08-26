@@ -3,17 +3,18 @@
 
 # MongoDB 연결 구조와 인증 함수의 실제 import 경로는 기존 프로젝트 구조에 맞춰 확인 필요
 from config import db
-from test_auth import get_current_user_id
 from datetime import datetime, timezone
-
 from flask import Blueprint, request, jsonify, render_template
 from bson import ObjectId
+# jwt_utils 추가
+from routes.utils.jwt_utils import decode_token, jwt_required
 
 # Flask Blueprint
 create_bp = Blueprint("create", __name__)
 
-
+# 팀페이지 생성 화면
 @create_bp.route("/team/new", methods=["GET"])
+@jwt_required
 def team_create_page():
 
     week = request.args.get("week", type=int)
@@ -26,8 +27,9 @@ def team_create_page():
         week=week
     )
 
-
+# 팀 페이지 생성 API
 @create_bp.route("/api/team_pages", methods=["POST"])
+@jwt_required
 def create_team_page():
 
     # 1. 요청 데이터 가져오기
@@ -50,14 +52,26 @@ def create_team_page():
     # week 가져오기
     week = data.get("week")
 
-    # 2. 현재 로그인한 사용자의 user_id 가져오기
-    user_id = get_current_user_id()
+    # 2. JWT에서 현재 로그인한 사용자 확인
+    token = request.cookies.get("mytoken")
+    payload = decode_token(token)
 
-    # user_id가 유효한 ObjectId인지 확인
-    if not ObjectId.is_valid(user_id):
+    if payload is None:
         return jsonify({
-            "error": "유효하지 않은 사용자 ID입니다."
-        }), 400
+            "error": "인증이 필요합니다. "
+        }), 401
+    
+    # JWT의 email로 현재 사용자 조회
+    current_user = db.users.find_one({
+        "email": payload["email"]
+    })
+
+    if current_user is None:
+        return jsonify({
+            "error": "현재 사용자를 찾을 수 없습니다."
+        }), 404
+    
+    user_id = current_user["_id"]
 
     # 3. 입력값 검증
 
@@ -137,17 +151,6 @@ def create_team_page():
 
     # 6. members 구성
     members = []
-
-    # 현재 로그인한 사용자 조회
-    current_user = db.users.find_one({
-        "_id": ObjectId(user_id)
-    })
-
-    # JWT의 user_id가 실제 users에 존재하는지 확인
-    if not current_user:
-        return jsonify({
-            "error": "현재 사용자를 찾을 수 없습니다."
-        }), 404
 
     # 현재 로그인한 사용자를 members에 자동 추가
     members.append({

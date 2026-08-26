@@ -1,14 +1,17 @@
 # 팀원 선택용 사용자 목록 조회
-from test_auth import get_current_user_id
+
+from routes.utils.jwt_utils import decode_token, jwt_required
 
 from flask import Blueprint, request, jsonify
-from bson import ObjectId
+
 from config import db
-from test_auth import get_current_user_id
+
 
 users_bp = Blueprint("users", __name__)
 
+
 @users_bp.route("/api/users", methods=["GET"])
+@jwt_required
 def get_available_users():
 
     # 1. URL에서 week 가져오기
@@ -20,40 +23,60 @@ def get_available_users():
             "error": "week 값이 올바르지 않습니다."
         }), 400
 
-    # 3. 현재 로그인한 사용자의 user_id 가져오기
-    # JWT 등 인증 정보에서 사용자 ID를 가져옴
-    user_id = get_current_user_id()
 
-    # 4. user_id가 유효한 ObjectId인지 확인
-    if not ObjectId.is_valid(user_id):
+    # 3. JWT에서 현재 로그인한 사용자 확인
+
+    token = request.cookies.get("mytoken")
+
+    payload = decode_token(token)
+
+    if payload is None:
         return jsonify({
-            "error": "유효하지 않은 사용자 ID입니다."
-        }), 400
+            "error": "인증이 필요합니다."
+        }), 401
 
-    # 5. users 컬렉션에서 현재 사용자 조회
+
+    # JWT email로 사용자 조회
     current_user = db.users.find_one({
-        "_id": ObjectId(user_id)
+        "email": payload["email"]
     })
 
-    if not current_user:
+
+    if current_user is None:
         return jsonify({
             "error": "현재 사용자를 찾을 수 없습니다."
         }), 404
 
-    # 6. 해당 week의 기존 팀 조회
+
+
+    # 4. 해당 주차에 이미 생성된 팀 조회
+
     teams = db.team_pages.find(
-        {"week": week},
-        {"members.user_id": 1}
+        {
+            "week": week
+        },
+        {
+            "members.user_id": 1
+        }
     )
 
-    # 7. 기존 팀에 속한 사용자 ID 수집
+
+    # 5. 이미 다른 팀에 속한 사용자 ID 수집
+
     joined_user_ids = set()
 
     for team in teams:
-        for member in team.get("members", []):
-            joined_user_ids.add(str(member["user_id"]))
 
-    # 8. users 컬렉션에서 선택 가능한 사용자 조회
+        for member in team.get("members", []):
+
+            joined_user_ids.add(
+                str(member["user_id"])
+            )
+
+
+
+    # 6. 모든 사용자 조회
+
     users = db.users.find(
         {},
         {
@@ -62,21 +85,41 @@ def get_available_users():
         }
     )
 
+
     available_users = []
+
 
     for user in users:
 
-        # 현재 주차의 기존 팀에 속한 사용자는 선택 목록에서 제외
-        if str(user["_id"]) in joined_user_ids:
+        user_id = str(user["_id"])
+
+
+        # 현재 주차 다른 팀에 속한 사람 제외
+        # 단, 로그인한 본인은 포함
+
+        if (
+            user_id in joined_user_ids
+            and user_id != str(current_user["_id"])
+        ):
             continue
 
+
         available_users.append({
-            "user_id": str(user["_id"]),
+
+            "user_id": user_id,
+
             "name": user["name"]
+
         })
 
-    # 9. 현재 로그인한 사용자 ID와 선택 가능한 사용자 목록 반환
+
+
+    # 7. 반환
+
     return jsonify({
+
         "current_user_id": str(current_user["_id"]),
+
         "users": available_users
+
     }), 200

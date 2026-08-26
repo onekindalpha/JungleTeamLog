@@ -2,36 +2,37 @@
 
 {% block content %}
 
-<!-- 홈 화면 -->
-<!-- 로그인 후 사용자가 처음 진입하는 화면 -->
+<section class="home">
 
-<!-- 주차 선택 (총 1주~23주까지) -->
-<section>
-    <h2>주차 선택</h2>
+    <h1>Jungle TeamLog</h1>
 
-    <select id="week-select">
+    <p>우리의 23주 흔적</p>
+
+    <div class="week-grid">
+
         {% for week in range(1, 24) %}
-            <option value="{{ week }}">{{ week }}주차</option>
+
+            <!-- 추가: 주차 클릭 시 서버에서 팀 존재 여부 확인 -->
+            <a
+                href="/team/check/{{ week }}"
+                class="week-circle"
+            >
+                {{ week }}
+            </a>
+
         {% endfor %}
-    </select>
+
+    </div>
+
+
+    <div class="home-buttons">
+
+        <button id="my-wil-button">My WIL</button>
+
+        <button id="logout-button">로그아웃</button>
+
+    </div>
+
 </section>
 
-<!-- My WIL 버튼 -->
-<section>
-    <button id="my-wil-button">My WIL</button>
-</section>
-
-<!-- 로그아웃 버튼 -->
-<section>
-    <button id="logout-button">로그아웃</button>
-</section>
-
-{% endblock %}
-
-{% block scripts %}
-<script>
-    const weekTeams = {{ week_teams | tojson }};
-</script>
-
-<script src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}
