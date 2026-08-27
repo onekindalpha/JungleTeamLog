@@ -52,24 +52,39 @@
             <!-- 1줄: 1 ~ 8주차 -->
             <div class="journey-row">
                 {% for week in range(1, 9) %}
-                    <a href="/team/check/{{ week }}" class="week-button">{{ week }}</a>
-                    {% if not loop.last %}<span class="path-line"></span>{% endif %}
+                    <a href="/team/check/{{ week }}" 
+                    class="week-button {% if week_status[week] %}active{% else %}inactive{% endif %}">
+                        {{ week }}
+                    </a>
+                    {% if not loop.last %}
+                        <span class="path-line"></span>
+                    {% endif %}
                 {% endfor %}
             </div>
 
             <!-- 2줄: 9 ~ 16주차 -->
             <div class="journey-row">
                 {% for week in range(9, 17) %}
-                    <a href="/team/check/{{ week }}" class="week-button">{{ week }}</a>
-                    {% if not loop.last %}<span class="path-line"></span>{% endif %}
+                    <a href="/team/check/{{ week }}" 
+                    class="week-button {% if week_status[week] %}active{% else %}inactive{% endif %}">
+                        {{ week }}
+                    </a>
+                    {% if not loop.last %}
+                        <span class="path-line"></span>
+                    {% endif %}
                 {% endfor %}
             </div>
 
             <!-- 3줄: 17 ~ 23주차 + 맨 오른쪽 화살표 -->
             <div class="journey-row">
                 {% for week in range(17, 24) %}
-                    <a href="/team/check/{{ week }}" class="week-button">{{ week }}</a>
-                    {% if not loop.last %}<span class="path-line"></span>{% endif %}
+                    <a href="/team/check/{{ week }}" 
+                    class="week-button {% if week_status[week] %}active{% else %}inactive{% endif %}">
+                        {{ week }}
+                    </a>
+                    {% if not loop.last %}
+                        <span class="path-line"></span>
+                    {% endif %}
                 {% endfor %}
                 
                 <!-- 23번 오른쪽 일체형 화살표 -->

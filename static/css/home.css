@@ -133,3 +133,13 @@ body, html {
 .thin-arrow-head {
     margin-left: -4px;
 }
+
+.week-button.active {
+    background-color: #00c73c !important;
+    color: white !important;
+}
+
+.week-button.inactive {
+    background-color: rgba(150, 150, 150, 0.3) !important;
+    color: #777 !important;
+}
