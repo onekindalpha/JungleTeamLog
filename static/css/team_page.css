@@ -1,0 +1,44 @@
+.coretime-hidden, 
+.scrum-hidden { 
+    display: none; 
+}
+
+.rate-btn.selected { 
+    background: #4c8dff; 
+    color: white; 
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* 사이드바 고정 */
+.sidebar-sticky {
+    position: sticky;
+    top: 1rem;
+    align-self: flex-start;
+}
+
+/* 앵커 이동 여백 */
+.section-anchor {
+    scroll-margin-top: 1rem;
+}
+
+.goal-edit-input,
+.scrum-edit-input,
+.coretime-edit-problem,
+.coretime-edit-solution,
+.wil-url-input,
+#curriculum-input {
+    width: auto;
+    min-width: 300px;
+    display: inline-block;
+}
+
+/* 팀 제목 + 수정 버튼 정렬 */
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
