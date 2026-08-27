@@ -1,5 +1,3 @@
-<img width="1544" height="823" alt="스크린샷 2026-08-27 오후 2 54 22" src="https://github.com/user-attachments/assets/44d3d4ba-0521-4bc9-9100-f6ab2cc4da8c" /># JungleTeamLog
-
 > 정글의 모든 기록을 모으다
 
 Krafton Jungle의 주차별 팀 활동과 학습 기록을 관리하기 위한 팀 기록 서비스입니다.
