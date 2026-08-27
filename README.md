@@ -1,10 +1,16 @@
-# JungleTeamLog
+<img width="1544" height="823" alt="스크린샷 2026-08-27 오후 2 54 22" src="https://github.com/user-attachments/assets/44d3d4ba-0521-4bc9-9100-f6ab2cc4da8c" /># JungleTeamLog
 
 > 정글의 모든 기록을 모으다
 
 Krafton Jungle의 주차별 팀 활동과 학습 기록을 관리하기 위한 팀 기록 서비스입니다.
 
 매주 팀이 새롭게 구성되고 핵심역량 목표, 일일 스크럼, 코어타임, WIL 등의 기록이 발생하는 환경에서 이를 주차별로 한곳에서 관리하고 다시 복기할 수 있도록 구현했습니다.
+<img width="1544" height="823" alt="스크린샷 2026-08-27 오후 2 53 17" src="https://github.com/user-attachments/assets/d9b0a856-7fbf-497d-a105-145d9cea15dc" />
+<img width="1544" height="823" alt="스크린샷 2026-08-27 오후 2 54 22" src="https://github.com/user-attachments/assets/e7ac27f4-13a0-4caf-b5f7-b46c02a02031" />
+<img width="1046" height="851" alt="스크린샷 2026-08-27 오후 2 15 15" src="https://github.com/user-attachments/assets/a2728e27-db09-46df-beb2-cb16e722aefc" />
+<img width="1046" height="851" alt="스크린샷 2026-08-27 오후 2 15 23" src="https://github.com/user-attachments/assets/f33fda3c-551e-405c-bf6c-c64535e0ecdd" />
+<img width="578" height="690" alt="스크린샷 2026-08-27 오후 2 57 15" src="https://github.com/user-attachments/assets/937bf5da-2bd1-4bbd-8534-2454d2c271a3" />
+
 
 ## 개발 기간
 
@@ -45,8 +51,7 @@ Krafton Jungle의 주차별 팀 활동과 학습 기록을 관리하기 위한 �
 |---|---|
 | Backend | Flask |
 | Database | MongoDB |
-| Template Engine | Jinja2 |
-| Authentication | JWT |
+| Template Engine | Jinja2 |<img width="1544" height="823" alt="스크린샷 2026-08-27 오후 2 54 22" src="https://github.com/user-attachments/assets/c65c7be7-757c-4c5f-bd8b-d58fca6bc18d" />
 | Frontend | HTML, CSS, JavaScript, jQuery, Bulma |
 | Web Server | Nginx |
 | Deployment | AWS EC2 |
