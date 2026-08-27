@@ -4,7 +4,7 @@
 # MongoDB 연결 구조와 인증 함수의 실제 import 경로는 기존 프로젝트 구조에 맞춰 확인 필요
 from config import db
 from datetime import datetime, timezone
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, redirect
 from bson import ObjectId
 # jwt_utils 추가
 from routes.utils.jwt_utils import decode_token, jwt_required
@@ -202,3 +202,243 @@ def create_team_page():
         "message": "팀 페이지가 생성되었습니다.",
         "team_page_id": str(result.inserted_id)
     }), 201
+
+
+
+# =========================
+# 팀 수정 페이지
+# =========================
+
+@create_bp.route("/team/edit/<team_page_id>")
+@jwt_required
+def edit_team(team_page_id):
+
+    page = db.team_pages.find_one(
+        {
+            "_id": ObjectId(team_page_id)
+        }
+    )
+
+
+    if not page:
+        return "팀 페이지를 찾을 수 없습니다", 404
+
+
+
+    # 현재 팀원
+    current_member_ids = [
+        m["user_id"]
+        for m in page["members"]
+    ]
+
+
+    # 같은 주차 다른 팀에 들어간 사람
+    joined_user_ids = []
+
+
+    same_week_teams = db.team_pages.find(
+        {
+            "week": page["week"],
+            "_id": {
+                "$ne": page["_id"]
+            }
+        }
+    )
+
+
+    for team in same_week_teams:
+
+        for member in team["members"]:
+
+            joined_user_ids.append(
+                member["user_id"]
+            )
+
+
+
+    # 추가 불가능한 사람
+    excluded_ids = list(
+        set(
+            current_member_ids
+            +
+            joined_user_ids
+        )
+    )
+
+
+
+    # 추가 가능한 사람
+    available_members = list(
+        db.users.find(
+            {
+                "_id": {
+                    "$nin": excluded_ids
+                }
+            }
+        )
+    )
+
+
+    return render_template(
+        "team_edit.html",
+        page=page,
+        available_members=available_members
+    )
+
+
+
+# =========================
+# 팀원 추가 저장
+# =========================
+
+@create_bp.route(
+    "/team/edit/<team_page_id>",
+    methods=["POST"]
+)
+@jwt_required
+def update_team(team_page_id):
+
+
+    selected_member_ids = request.form.getlist(
+        "member_ids"
+    )
+
+
+    page = db.team_pages.find_one(
+        {
+            "_id": ObjectId(team_page_id)
+        }
+    )
+
+
+    if not page:
+        return "팀 페이지 없음", 404
+
+
+
+    # 현재 팀원
+    current_member_ids = [
+        m["user_id"]
+        for m in page["members"]
+    ]
+
+
+
+    # 같은 주차 다른 팀원 검증
+    joined_user_ids = []
+
+
+    same_week_teams = db.team_pages.find(
+        {
+            "week": page["week"],
+            "_id": {
+                "$ne": page["_id"]
+            }
+        }
+    )
+
+
+    for team in same_week_teams:
+
+        for member in team["members"]:
+
+            joined_user_ids.append(
+                member["user_id"]
+            )
+
+
+
+    allowed_ids = set(
+        selected_member_ids
+    )
+
+
+    new_members = []
+
+
+
+    for member_id in allowed_ids:
+
+        if not ObjectId.is_valid(member_id):
+            continue
+
+        user_id = ObjectId(member_id)
+
+
+        # 이미 팀에 있음
+        if user_id in current_member_ids:
+            continue
+
+
+        # 다른 팀에 있음
+        if user_id in joined_user_ids:
+            continue
+
+
+
+        user = db.users.find_one(
+            {
+                "_id": user_id
+            }
+        )
+
+
+        if user:
+
+            new_members.append(
+                {
+                    "user_id": user["_id"],
+                    "name": user["name"]
+                }
+            )
+
+
+
+    if new_members:
+
+        db.team_pages.update_one(
+
+            {
+                "_id": ObjectId(team_page_id)
+            },
+
+            {
+                "$push":
+                {
+                    "members":
+                    {
+                        "$each": new_members
+                    }
+                }
+            }
+
+        )
+
+
+    return redirect(
+        f"/team/{team_page_id}"
+    )
+
+
+
+# =========================
+# 팀 삭제
+# =========================
+
+@create_bp.route(
+    "/team/delete/<team_page_id>",
+    methods=["POST"]
+)
+@jwt_required
+def delete_team(team_page_id):
+
+
+    db.team_pages.delete_one(
+        {
+            "_id": ObjectId(team_page_id)
+        }
+    )
+
+
+    return redirect("/")
+

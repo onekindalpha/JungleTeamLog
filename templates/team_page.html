@@ -23,20 +23,17 @@
 
     <div class="team-header">
 
-    <h1 class="title">
-      {{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}
-    </h1>
+      <h1 class="title">
+        {{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}
+      </h1>
 
+      <a href="/team/edit/{{ page._id }}">
+        <button class="button is-primary">
+          팀 수정하기
+        </button>
+      </a>
 
-    <a href="/team/edit/{{ page._id }}">
-
-      <button class="button is-primary">
-        팀 수정하기
-      </button>
-
-    </a>
-
-  </div>
+    </div>
 
     <div class="columns">
 
@@ -45,14 +42,24 @@
         <div class="sidebar-sticky">
 
           <div class="box">
+            <p class="menu-label">팀원</p>
+            <ul id="team-goal-list" class="menu-list">
+              {% for name in member_names.values() %}
+                <li data-id="{{ g._id }}">
+                    <span class="icon has-text-success"><i class="fas fa-check"></i></span>
+                    {{ name }}
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="box">
             <p class="menu-label">이번 주 목표</p>
             <ul id="team-goal-list" class="menu-list">
               {% for g in goals %}
                 <li data-id="{{ g._id }}">
-                  <a href="#goals-section">
                     <span class="icon has-text-success"><i class="fas fa-check"></i></span>
-                    {{ g.competency }}
-                  </a>
+                    ✅ {{ g.competency }}
                 </li>
               {% endfor %}
             </ul>
