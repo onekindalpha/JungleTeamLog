@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/team_edit.css') }}">
+{% endblock %}
+
+
+{% block content %}
+
+<div class="te-container">
+
+    <div class="te-card-wrapper">
+
+        <a href="/team/{{ page._id }}">
+            <button class="te-btn te-btn-secondary">
+                HOME
+            </button>
+        </a>
+
+
+        <h1 class="te-main-title">
+            {{ page.week }}주차 {{ page.team_number }}팀 수정
+        </h1>
+
+
+        <div class="te-form-group">
+
+            <h2 class="te-label">
+                현재 팀원
+            </h2>
+
+            <ul class="te-member-list">
+            {% for member in page.members %}
+                <li>
+                    {{ member.name }}
+                </li>
+            {% endfor %}
+            </ul>
+
+        </div>
+
+
+        <hr>
+
+
+        <form method="POST" action="/team/edit/{{ page._id }}">
+
+            <div class="te-form-group">
+
+                <h2 class="te-label">
+                    추가할 팀원 선택
+                </h2>
+
+
+                {% for member in available_members %}
+
+                    <label>
+                        <input 
+                            type="checkbox"
+                            name="member_ids"
+                            value="{{ member._id }}"
+                        >
+
+                        {{ member.name }}
+                    </label>
+
+                    <br>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="te-btn-group">
+
+                <button type="submit" class="te-btn te-btn-primary">
+                    팀 수정 저장
+                </button>
+
+
+                <a href="/team/{{ page._id }}">
+                    <button type="button" class="te-btn te-btn-secondary">
+                        취소
+                    </button>
+                </a>
+
+            </div>
+
+        </form>
+
+
+        <form method="POST" action="/team/delete/{{ page._id }}">
+
+            <div class="te-btn-group">
+
+                <button class="te-btn te-btn-danger">
+                    팀 삭제
+                </button>
+
+            </div>
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+{% endblock %}

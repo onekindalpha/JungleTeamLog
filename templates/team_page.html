@@ -21,7 +21,22 @@
 <section class="section">
   <div class="container">
 
-    <h1 class="title">{{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}</h1>
+    <div class="team-header">
+
+    <h1 class="title">
+      {{ page.week }}주차 {{ page.team_number }}팀: {{ page.team_name }}
+    </h1>
+
+
+    <a href="/team/edit/{{ page._id }}">
+
+      <button class="button is-primary">
+        팀 수정하기
+      </button>
+
+    </a>
+
+  </div>
 
     <div class="columns">
 
