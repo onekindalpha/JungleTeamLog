@@ -7,7 +7,7 @@ $(function () {
         const $urlSpan = $li.find('.wil-url');
         const currentUrl = $urlSpan.find('a').attr('href') || '';  // 기존 값 있으면 꺼내오고, 없으면 빈 값
 
-        $urlSpan.html(`<input type="text" class="wil-url-input" value="${currentUrl}" placeholder="블로그 URL을 입력하세요">`);
+        $urlSpan.html(`<input type="text" class="wil-url-input input is-small" value="${currentUrl}" placeholder="블로그 URL을 입력하세요">`);
         $(this).text('저장').removeClass('wil-edit-btn').addClass('wil-save-btn');
     });
 

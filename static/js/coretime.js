@@ -19,17 +19,26 @@ $(function () {
       success: function (res) {
         const c = res.coretime;
         const html = `
-          <li class="coretime-item" data-id="${c._id}">
-            <span class="coretime-date">${c.log_date}</span>
-            <span class="coretime-name">${c.user_name}</span>
-            <button class="coretime-edit-btn">수정</button>
-            <button class="coretime-delete-btn">삭제</button>
+          <li class="coretime-item box py-3 px-4 mb-2" data-id="${c._id}">
+            <span class="coretime-date tag is-light"></span>
+            <span class="coretime-name has-text-weight-semibold ml-2"></span>
+            <div class="buttons is-pulled-right">
+              <button class="coretime-edit-btn button is-small is-link is-light">수정</button>
+              <button class="coretime-delete-btn button is-small is-danger is-light">삭제</button>
+            </div>
             <br>
-            <span>문제:</span> <span class="coretime-problem">${c.problem}</span><br>
-            <span>해결:</span> <span class="coretime-solution">${c.solution}</span>
+            <p class="mt-2"><strong>문제:</strong> <span class="coretime-problem"></span></p>
+            <p><strong>해결:</strong> <span class="coretime-solution"></span></p>
           </li>
         `;
-        $('#coretime-list').prepend(html);
+        const $li = $(html);
+        // XSS 방지: text()로 안전하게 값 삽입
+        $li.find('.coretime-date').text(c.log_date);
+        $li.find('.coretime-name').text(c.user_name);
+        $li.find('.coretime-problem').text(c.problem);
+        $li.find('.coretime-solution').text(c.solution);
+
+        $('#coretime-list').prepend($li);
         $('#coretime-problem-input').val('');
         $('#coretime-solution-input').val('');
       },
@@ -51,13 +60,15 @@ $(function () {
     const currentProblem = $li.find('.coretime-problem').text();
     const currentSolution = $li.find('.coretime-solution').text();
 
-    $li.find('.coretime-problem').replaceWith(
-      `<input type="text" class="coretime-edit-problem" value="${currentProblem}">`
-    );
-    $li.find('.coretime-solution').replaceWith(
-      `<input type="text" class="coretime-edit-solution" value="${currentSolution}">`
-    );
-    $(this).text('저장').removeClass('coretime-edit-btn').addClass('coretime-save-btn');
+    const $problemInput = $('<input type="text" class="coretime-edit-problem input is-small">').val(currentProblem);
+    const $solutionInput = $('<input type="text" class="coretime-edit-solution input is-small">').val(currentSolution);
+
+    $li.find('.coretime-problem').replaceWith($problemInput);
+    $li.find('.coretime-solution').replaceWith($solutionInput);
+
+    $(this).text('저장')
+      .removeClass('coretime-edit-btn is-link is-light')
+      .addClass('coretime-save-btn is-primary');
   });
 
   // 저장
@@ -78,9 +89,15 @@ $(function () {
       contentType: 'application/json',
       data: JSON.stringify({ problem: newProblem, solution: newSolution }),
       success: function (res) {
-        $li.find('.coretime-edit-problem').replaceWith(`<span class="coretime-problem">${res.problem}</span>`);
-        $li.find('.coretime-edit-solution').replaceWith(`<span class="coretime-solution">${res.solution}</span>`);
-        $li.find('.coretime-save-btn').text('수정').removeClass('coretime-save-btn').addClass('coretime-edit-btn');
+        const $problemSpan = $('<span class="coretime-problem"></span>').text(res.problem);
+        const $solutionSpan = $('<span class="coretime-solution"></span>').text(res.solution);
+
+        $li.find('.coretime-edit-problem').replaceWith($problemSpan);
+        $li.find('.coretime-edit-solution').replaceWith($solutionSpan);
+
+        $li.find('.coretime-save-btn').text('수정')
+          .removeClass('coretime-save-btn is-primary')
+          .addClass('coretime-edit-btn is-link is-light');
       },
       error: function (xhr) {
         alert(xhr.responseJSON.error);
