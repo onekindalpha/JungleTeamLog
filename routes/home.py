@@ -34,19 +34,26 @@ def home():
             {"_id": 1, "week": 1}
         )
     )
+    print("현재 user_id:", user_id, type(user_id))
 
-    # 주차 -> 팀 페이지 ID 구성
-    week_teams = {}
+    print("teams:")
     for team in teams:
-        week_teams[team["week"]] = str(team["_id"])
+        print(team)
+    # 주차 -> 팀 페이지 ID 구성
+    week_status = {}
+    # 기본 값: 팀 없음
+    for week in range(1,24):
+        week_status[week] = False
+    # 내가 속한 팀이 있는 주차는 True
+    for team in teams:
+        week_status[team["week"]] = True
 
     # 디버깅용 코드
     print("현재 user_id:", user_id)
     print("teams:", teams)
-    print("week_teams:", week_teams)
 
     # 홈 화면 렌더링
-    return render_template("home.html", week_teams=week_teams)
+    return render_template("home.html", week_status=week_status)
 
 
 # 주차 클릭 시 DB에서 팀 존재 여부 확인
